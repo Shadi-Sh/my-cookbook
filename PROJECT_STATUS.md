@@ -1,5 +1,11 @@
 # Project status
 
+## October 1 website import update
+
+Added authenticated public recipe-link import for a visible allowlist of 20 recipe publishers. Every redirect must remain on the exact approved root/www hosts over HTTPS. JSON-LD Recipe arrays/graphs and nested instruction sections are supported. Multiple recipes are offered individually; selected data opens in the existing editable draft with explicit replacement consent. Source URL and original structured data are preserved. Missing times remain unknown; no AI service or paid fallback is connected. Unsupported sites, blocked fetches and missing structured data show a text/photo fallback message. Language is preserved, not translated.
+
+Verification: 17 domain/security/storage/import tests passed. A real BBC Good Food Easy pancakes fetch returned 6 ingredients, 5 steps, 10-minute prep and 20-minute cooking. Full device/browser and second-device checks remain for the owner; automated tests cannot establish that all real-world features work. Multi-image OCR and per-field AI provenance remain planned and are not part of this release.
+
 ## Decisions
 
 - Product name My Cookbook; German Mein Kochbuch.

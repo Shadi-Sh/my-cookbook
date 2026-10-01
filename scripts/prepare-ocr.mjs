@@ -6,7 +6,7 @@ const root = join(import.meta.dirname, '..', 'public', 'ocr');
 await mkdir(join(root,'core'), {recursive:true});
 await mkdir(join(root,'lang'), {recursive:true});
 const js = dirname(require.resolve('tesseract.js/package.json'));
-const core = dirname(require.resolve('tesseract.js-core/package.json'));
+const core = dirname(createRequire(require.resolve('tesseract.js/package.json')).resolve('tesseract.js-core/package.json'));
 await copyFile(join(js,'dist','worker.min.js'), join(root,'worker.min.js'));
 await copyFile(join(js,'LICENSE.md'), join(root,'LICENSE-tesseract.js'));
 await copyFile(join(core,'LICENSE'), join(root,'LICENSE-tesseract-core'));
