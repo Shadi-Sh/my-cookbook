@@ -1,6 +1,6 @@
 # Cloudflare kostenlos verbinden
 
-Die App ist technisch vorbereitet, aber ohne Zugang ausgeschaltet. Der erste Modellaufruf wurde mit HTTP 401 abgelehnt: lokal stand die Account-ID auch im Token-Feld. Rezept- und Bildqualität sind deshalb noch nicht live bestätigt.
+Gemma 4 ist mit einem korrigierten Token live geprüft. Ein vollständiges Testrezept mit den gemeldeten Zutatenzeilen wurde als deutscher Text und als englisches Bild mit zwei zusammengeführten Testseiten erfolgreich ausgewertet. Beide Mengenbereiche blieben erhalten; Vorbereitung 5, Kochen 15 und Gesamtzeit 20 Minuten wurden als ungeprüfte KI-Schätzungen markiert. Der frühere Originalfoto-Fehler kann ohne dessen Bild nicht vollständig reproduziert werden. Browser-Upload, Speichern und Neuladen bleiben vom Nutzer zu prüfen; automatische Backup- und Statusprüfungen bestehen.
 
 1. Kostenloses Cloudflare-Konto erstellen: https://dash.cloudflare.com/sign-up . Keine kostenpflichtige Workers-Erweiterung aktivieren.
 2. Im Dashboard Workers AI öffnen und „Use REST API“ wählen. Für das eigene Konto einen Workers-AI-Token mit Workers AI Read und Edit erstellen; keinen globalen API-Schlüssel verwenden. Account-ID notieren.
@@ -10,6 +10,6 @@ Die App ist technisch vorbereitet, aber ohne Zugang ausgeschaltet. Der erste Mod
 
 Die App begrenzt alle Modellanfragen zusammen auf fünf täglich (UTC), zählt fehlgeschlagene Aufrufe mit, begrenzt Bilder und Ausgabe und wiederholt Anfragen nicht automatisch. Cloudflare selbst stellt im Free-Tarif nach Ausschöpfung des kostenlosen Kontingents Anfragen ein. Das Tageslimit der App ist keine Zusicherung, dass das Cloudflare-Kontingent immer ausreicht, insbesondere wenn andere Apps dasselbe Konto nutzen. Keine kostenpflichtige Alternative aktiviert. Bei späterer Tarifänderung Verbindung vor weiterer Nutzung neu prüfen.
 
-Bis zu vier Bilder werden auf dem Gerät in gewählter Reihenfolge zu einem Bild kombiniert. Sehr lange Bilder müssen enger zugeschnitten werden; die tatsächliche Modellqualität für mehrseitige Rezepte ist noch unbestätigt. Fehlende Zutatenmengen werden nicht geschätzt. Automatisch erzeugte Zeiten und Portionszahlen werden konservativ immer als Schätzung gekennzeichnet, auch wenn das Modell eine Quellenangabe behauptet. Zutaten/Schritte erhalten zunächst eine gemeinsame Kennzeichnung pro Feldgruppe.
+Bis zu vier Bilder werden auf dem Gerät in gewählter Reihenfolge zu einem Bild kombiniert. Sehr lange Bilder müssen enger zugeschnitten werden; ein sauberes Bild mit zwei Testseiten wurde erfolgreich gelesen; komplexe Originalfotos sind noch nicht geprüft. Fehlende Zutatenmengen werden nicht geschätzt. Automatisch erzeugte Zeiten und Portionszahlen werden konservativ immer als Schätzung gekennzeichnet, auch wenn das Modell eine Quellenangabe behauptet. Zutaten/Schritte erhalten zunächst eine gemeinsame Kennzeichnung pro Feldgruppe.
 
 Quellen: https://developers.cloudflare.com/workers-ai/get-started/rest-api/ ; https://developers.cloudflare.com/workers-ai/models/gemma-4-26b-a4b-it/ ; https://developers.cloudflare.com/workers-ai/platform/pricing/
