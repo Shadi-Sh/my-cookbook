@@ -2,7 +2,7 @@
 
 ## Assets and trust boundaries
 
-Private recipe texts/photos, cooking history and pantry data belong to a signed-in user. Trust boundaries: browser → private Sites dispatcher → Worker → D1/R2, and untrusted imported JSON/photos → validation → editable draft. Chat-generated data is untrusted. No model service is connected and no recipe data is sent to one by the application.
+Private recipe texts/photos, cooking history and pantry data belong to a signed-in user. Trust boundaries: browser → private Sites dispatcher → Worker → D1/R2, and untrusted imported JSON/photos → validation → editable draft. Chat-generated data is untrusted. Optional Cloudflare Workers AI receives selected recipe text or images only after explicit consent. See docs/architecture.md for the current data flow and open provider-policy checks.
 
 ## Implemented controls
 
@@ -12,7 +12,7 @@ Private recipe texts/photos, cooking history and pantry data belong to a signed-
 - Request streams are size-limited before full assembly. Zod applies field lengths, count limits, known fields, numeric bounds and unique recipe IDs. JSON imports cannot execute code. React renders user strings as text; source strings are not automatically fetched or rendered as HTML.
 - Image uploads restrict JPEG/PNG/WebP MIME and signatures, use random keys and private reads with nosniff and no-store. The normal client resizes/re-encodes images; the server verifies signatures, not a full image decoder. Uploaded files are never treated as executable content.
 - All per-user API responses are non-cacheable. Mutation version checks prevent stale overwrites. Upload quotas and per-request limits bound ordinary use; there is no bespoke rate limiter yet.
-- No runtime SQL schema initialization, paid API key, privileged frontend key, arbitrary URL fetcher or web scraping operation.
+- No runtime SQL schema initialization or privileged frontend key. Cloudflare AI credentials remain server-side. Recipe URL fetching is limited to a fixed HTTPS publisher allowlist, including redirects.
 - Credentials and environment files are ignored by git. Only logical storage binding names and platform Site identity are committed. Build artifacts and database preview state are ignored.
 
 ## Verification
@@ -39,4 +39,8 @@ Production dependency advisory scan on 2026-10-01 after patching: {'info': 0, 'l
 
 ## Recipe extraction
 
-Photo OCR runs on-device using same-origin pinned Tesseract worker, WASM and language files. No external OCR/LLM service receives recipe content. Images are restricted by type, bytes (10 MB) and decoded dimensions (40 million pixels), then resized to at most 2500 pixels per edge. Text has a 30,000-character limit and remains React-rendered plain text. The parser never executes recipe instructions, performs web requests, or evaluates markup. Existing fields require explicit replacement consent; saving and owner authorization use the existing editor/API validation. The source photo is not retained by OCR. Original text is retained only when the recipe is saved. Recognition accuracy is not guaranteed; imported amounts and steps require human review.
+Photo OCR runs on-device using same-origin pinned Tesseract worker, WASM and language files. Local OCR sends no recipe content to an external service. The separate optional AI workflow sends selected content to Cloudflare with explicit consent. Images are restricted by type, bytes (10 MB) and decoded dimensions (40 million pixels), then resized to at most 2500 pixels per edge. Text has a 30,000-character limit and remains React-rendered plain text. The parser never executes recipe instructions, performs web requests, or evaluates markup. Existing fields require explicit replacement consent; saving and owner authorization use the existing editor/API validation. The source photo is not retained by OCR. Original text is retained only when the recipe is saved. Recognition accuracy is not guaranteed; imported amounts and steps require human review.
+
+## Current review: 2026-10-01
+
+The global atomic AI cap is five attempts per UTC day, including failures; it is not a monetary budget guarantee. Verify provider free-only settings separately. There is no general upload/link rate limiter, complete attachment deletion lifecycle, or newly verified live auth/R2 restore audit. Backup export/import size compatibility near the limits remains open. See docs/architecture.md for prioritized risks and decisions.
