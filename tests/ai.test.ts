@@ -3,6 +3,14 @@ import assert from 'node:assert/strict';
 import {DatabaseSync} from 'node:sqlite';
 import {CoreSchema,StateSchema,newRecipe,emptyState,total} from '../lib/model.ts';
 import {parseAIResult,mergeAIFields,aiPrompt} from '../lib/recipe-ai.ts';
+import {providerRequest,providerText} from '../lib/cloudflare-ai.ts';
+test('Gemma text and image requests use messages and validate provider envelopes',()=>{
+ const request=providerRequest('Read recipe','abc');
+ assert.deepEqual(request.messages[0].content,[{type:'text',text:'Read recipe'},{type:'image_url',image_url:{url:'data:image/jpeg;base64,abc'}}]);
+ assert.equal(providerRequest('Read recipe').messages[0].content,'Read recipe');
+ assert.equal(providerText({success:true,result:{choices:[{message:{content:'{}'}}]}}),'{}');
+ for(const data of [{success:false},{success:true,result:{choices:[]}},{success:true,result:{choices:[{message:{content:null}}]}}])assert.throws(()=>providerText(data));
+});
 test('AI origins and independent review statuses survive recipe and backup parsing',()=>{
  const fields=parseAIResult(JSON.stringify({recipe:{title:'Soup',cook:20,ingredients:[{name:'salt',quantity:null,unit:'',note:'To taste'}]},estimates:[{field:'cook',reason:'Simmer 15–25 minutes based on the method'}]}),'en');
  assert.equal(fields.aiMarks?.cook.origin,'estimated');assert.equal(fields.aiMarks?.title.status,'unreviewed');
