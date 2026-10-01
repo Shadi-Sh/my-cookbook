@@ -1,4 +1,5 @@
 "use client";
+import {amountText,parseAmount,unitCatalog,canonicalUnit} from "@/lib/units";
 import { useState, useRef } from "react";
 import RecipeImporter from "./recipe-importer";
 import RecipeAIPanel from './recipe-ai-panel';
@@ -44,6 +45,7 @@ export default function RecipeEditor({
   const [warnings, setWarnings] = useState<string[] | null>(null);
   const [newTag, setNewTag] = useState("");
   const [error, setError] = useState("");
+  const [invalidAmounts,setInvalidAmounts]=useState<Record<number,boolean>>({});
   const t = (de: string, en: string) => (lang === "de" ? de : en);
   const file = useRef<HTMLInputElement>(null);
   function set<K extends keyof Recipe>(key: K, value: Recipe[K]) {
@@ -96,6 +98,7 @@ export default function RecipeEditor({
     }
   }
   async function save(force = false) {
+    if(Object.values(invalidAmounts).some(Boolean)){setError(t("Bitte ungültige Mengen korrigieren (z. B. 8–10).","Correct invalid amounts (e.g. 8–10)."));return;}
     setError("");
     try {
       const {
@@ -134,8 +137,9 @@ export default function RecipeEditor({
           )}
         </DialogDescription>
         <div className="editor-scroll">
-          <RecipeAIPanel draft={draft} lang={lang} onBusy={setRecognizing} onApply={fields=>{setDraft(d=>({...d,...fields}));setWarnings(null);}}/>
+          <RecipeAIPanel draft={draft} lang={lang} onBusy={setRecognizing} onApply={fields=>{if(fields.ingredients)setInvalidAmounts({});setDraft(d=>({...d,...fields}));setWarnings(null);}}/>
           <RecipeImporter lang={lang} hasContent={!!(draft.title || draft.ingredients.length || draft.steps.length)} onBusy={setRecognizing} onApply={(fields, issues) => {
+            if(fields.ingredients)setInvalidAmounts({});
             setDraft(d => ({...d, ...fields, aiMarks:{}, originalImport: d.originalImport || fields.originalImport || ""}));
             setImportWarnings(issues); setWarnings(null);
           }} />
@@ -279,28 +283,31 @@ export default function RecipeEditor({
               {t("Zutat", "Ingredient")}
             </button>
           </div>
+          <datalist id="recipe-units">{Object.keys(unitCatalog).map(unit=><option key={unit} value={unit}/>)}</datalist>
           {draft.ingredients.map((i, k) => (
             <div className="ingredient-edit" key={k}>
               <input
-                type="number"
-                min="0"
-                step="any"
-                aria-label={t("Menge", "Amount")}
-                placeholder="—"
-                value={i.quantity ?? ""}
-                onChange={(e) =>
-                  ingredient(
-                    k,
-                    "quantity",
-                    e.target.value === "" ? null : Number(e.target.value),
-                  )
-                }
+                type="text"
+                key={`${k}-${amountText(i)}`}
+                aria-label={t("Menge oder Mengenbereich", "Amount or range")}
+                placeholder="8–10"
+                maxLength={40}
+                defaultValue={amountText(i)}
+                onBlur={(e)=>{
+                  const v=parseAmount(e.target.value);
+                  const invalid=!!e.target.value.trim()&&v.quantity===null&&!v.quantityRange;
+                  setInvalidAmounts(old=>({...old,[k]:invalid}));
+                  if(invalid){setError(t("Menge nicht erkannt. Beispiel: 8–10 oder 1 ½.","Amount not recognized. Example: 8–10 or 1 ½."));return;}
+                  set("ingredients",draft.ingredients.map((old,n)=>n===k?{...old,...v,quantityRange:v.quantityRange}:old));
+                }}
               />
               <input
                 aria-label={t("Einheit", "Unit")}
                 placeholder="g / EL"
+                list="recipe-units"
                 maxLength={40}
                 value={i.unit}
+                onBlur={(e)=>ingredient(k,"unit",canonicalUnit(e.target.value))}
                 onChange={(e) => ingredient(k, "unit", e.target.value)}
               />
               <input
@@ -314,12 +321,10 @@ export default function RecipeEditor({
               <button
                 className="icon-button"
                 aria-label={t("Zutat entfernen", "Remove ingredient")}
-                onClick={() =>
-                  set(
-                    "ingredients",
-                    draft.ingredients.filter((_, n) => n !== k),
-                  )
-                }
+                onClick={() => {
+                  setInvalidAmounts(old=>Object.fromEntries(Object.entries(old).filter(([n])=>Number(n)!==k).map(([n,v])=>[Number(n)>k?Number(n)-1:Number(n),v])));
+                  set("ingredients",draft.ingredients.filter((_, n) => n !== k));
+                }}
               >
                 <X size={16} />
               </button>
@@ -330,8 +335,8 @@ export default function RecipeEditor({
                 maxLength={200}
                 aria-label={t("Zutatennotiz", "Ingredient note")}
                 placeholder={t(
-                  "z. B. fein gehackt / Mengenbereich",
-                  "e.g. finely chopped / quantity range",
+                  "z. B. fein gehackt",
+                  "e.g. finely chopped",
                 )}
                 onChange={(e) => ingredient(k, "note", e.target.value)}
               />

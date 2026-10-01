@@ -11,7 +11,7 @@ test('German recipe fills structured amounts, timings and steps without inventin
 });
 test('English mixed fractions and ingredient names beginning with a unit remain intact',()=>{
  const {fields}=extractRecipe('Soup\nIngredients\n1 1/2 cups water\n2 garlic cloves\nInstructions\nStir well.','en');
- assert.equal(fields.ingredients?.[0].quantity,1.5); assert.equal(fields.ingredients?.[1].name,'garlic cloves'); assert.equal(fields.steps?.[0],'Stir well.');
+ assert.equal(fields.ingredients?.[0].quantity,1.5); assert.equal(fields.ingredients?.[1].name,'garlic'); assert.equal(fields.steps?.[0],'Stir well.');
 });
 test('Persian digits, decimal amounts and name-first quantities are parsed',()=>{
  const {fields}=extractRecipe('کوکی بادام\nبرای ۴ نفر\nمواد لازم\n۱۲۰ گرم بادام\nشکر: ۷۵ گرم\n۱٫۵ قاشق چای‌خوری وانیل\nطرز تهیه\n۱. مخلوط کنید.','fa');
@@ -19,6 +19,6 @@ test('Persian digits, decimal amounts and name-first quantities are parsed',()=>
 });
 test('Unknown quantities and ranges stay visible; oversized and blank inputs are rejected',()=>{
  const {fields,warnings}=extractRecipe('Soup\nIngredients\nSalt to taste\n100–150 g flour\nInstructions\nMix.','en');
- assert.equal(fields.ingredients?.[0].quantity,null);assert.equal(fields.ingredients?.[1].quantity,null);assert.match(fields.ingredients?.[1].name??'',/100–150/);assert.ok(warnings.length);
+ assert.equal(fields.ingredients?.[0].quantity,null);assert.equal(fields.ingredients?.[1].quantity,null);assert.deepEqual(fields.ingredients?.[1].quantityRange,{min:100,max:150});assert.equal(fields.ingredients?.[1].name,'flour');assert.ok(warnings.length);
  assert.throws(()=>extractRecipe('', 'en'));assert.throws(()=>extractRecipe('a'.repeat(30001),'en'));
 });

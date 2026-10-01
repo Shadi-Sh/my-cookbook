@@ -1,4 +1,5 @@
 "use client";
+import {amountText} from "@/lib/units";
 import { useState, useEffect, useRef, useCallback } from "react";
 import RecipeEditor from "./recipe-editor";
 import { Picker, Field } from "./widgets";
@@ -922,9 +923,9 @@ export default function Cookbook() {
                       <li key={k}>
                         <div>
                           <strong>
-                            {i.quantity === null
+                            {!amountText(i)
                               ? i.unit || t("nach Geschmack", "to taste")
-                              : `${fmt((i.quantity * portions) / active.yield)} ${i.unit}`}
+                              : `${amountText(i,portions/active.yield)} ${i.unit}`}
                           </strong>
                           <span dir="auto">{i.name}</span>
                         </div>
@@ -1503,7 +1504,7 @@ export default function Cookbook() {
                           state.shopping
                             .map(
                               (i) =>
-                                `${i.checked ? "[x]" : "[ ]"} ${fmt(i.quantity)} ${i.unit} ${i.name}`,
+                                `${i.checked ? "[x]" : "[ ]"} ${amountText(i)} ${i.unit} ${i.name}`,
                             )
                             .join("\n"),
                           "shopping-list.txt",
@@ -1533,7 +1534,7 @@ export default function Cookbook() {
                       />
                       <span dir="auto">{i.name}</span>
                       <strong>
-                        {fmt(i.quantity)} {i.unit}
+                        {amountText(i) || "—"} {i.unit}
                       </strong>
                     </label>
                   ))}
