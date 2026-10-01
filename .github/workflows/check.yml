@@ -1,16 +1,46 @@
 name: Checks
-on: [push, pull_request]
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: checks-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate:
+    name: Tests, typecheck and build
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
+    timeout-minutes: 15
+    env:
+      CI: 'true'
+      WRANGLER_SEND_METRICS: 'false'
+      CLOUDFLARE_CF_FETCH_ENABLED: 'false'
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Check out source
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
-          node-version: '22.18.0'
-      - run: npm run install:ci
-      - run: npm run test
-      - run: npm run typecheck
-      - run: npm run build
+          persist-credentials: false
+      - name: Set up Node.js 24
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Set up pinned pnpm
+        uses: pnpm/action-setup@f520eceda224fe1a4aed5a2a27a194379a409996 # v6
+        with:
+          run_install: false
+      - name: Install locked dependencies
+        run: npm run install:ci
+      - name: Run tests
+        run: npm run test
+      - name: Check types
+        run: npm run typecheck
+      - name: Build website
+        run: npm run build
