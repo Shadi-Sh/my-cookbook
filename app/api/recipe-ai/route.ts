@@ -4,9 +4,10 @@ import {imageType} from '@/lib/model';
 import {aiPrompt,parseAIResult} from '@/lib/recipe-ai';
 import {recipeModel,providerRequest,providerText} from '@/lib/cloudflare-ai';
 import {z} from 'zod';
+import {readAIQuota} from '@/lib/ai-quota';
 function config(){return env as unknown as {CF_AI_ACCOUNT_ID?:string;CF_AI_TOKEN?:string;CF_AI_FREE_ONLY_CONFIRMED?:string};}
 function ready(){const c=config();return /^[a-f0-9]{32}$/i.test(c.CF_AI_ACCOUNT_ID??'')&&!!c.CF_AI_TOKEN&&c.CF_AI_TOKEN!==c.CF_AI_ACCOUNT_ID&&c.CF_AI_FREE_ONLY_CONFIRMED==='true';}
-export async function GET(req:Request){const auth=await authorize(req);if(auth.error)return auth.error;return json({available:ready(),dailyLimit:5});}
+export async function GET(req:Request){const auth=await authorize(req);if(auth.error)return auth.error;try{return json({available:ready(),...await readAIQuota(db())});}catch{return json({error:'Tageslimit kann gerade nicht geladen werden. / Daily usage unavailable.'},503);}}
 export async function POST(req:Request){
  const auth=await authorize(req,true);if(auth.error)return auth.error;
  if(!ready()) return json({error:'Cloudflare-Zugang noch nicht eingerichtet. / Cloudflare connection not configured.'},503);

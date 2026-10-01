@@ -189,3 +189,18 @@ test("photo metadata cannot be read across accounts", async () => {
   assert.equal((await ownedImage(db, "alice", "image-1"))?.mime, "image/jpeg");
   db.raw.close();
 });
+test('Saved recipe edits, AI review status, revisions and shopping checks survive reload and backup', async()=>{
+ const db=database();
+ const r=newRecipe({title:'Herb pasta',yield:2,prep:5,cook:15,totalMinutes:20,ingredients:[{name:'basil',quantity:null,quantityRange:{min:8,max:10},unit:'leaves'}],steps:['Mix herbs into pasta.'],aiMarks:{totalMinutes:{origin:'estimated',status:'verified',reason:'Compared with recipe',originalValue:'20'}}});
+ const state=emptyState();state.recipes.push(r);state.pantry=['rice'];state.shopping=shoppingFor([{recipe:r,yield:4}],state.pantry,true);state.shopping[0].checked=true;
+ assert.equal(await writeNotebook(db,'test-owner',state,0),1);
+ const loaded=await readNotebook(db,'test-owner');assert.deepEqual(loaded.state,state);assert.deepEqual(loaded.state.shopping[0].quantityRange,{min:16,max:20});
+ const {id,createdAt,history,revisions,...before}=loaded.state.recipes[0];
+ loaded.state.recipes[0].revisions.push({date:'2026-10-01T20:00:00Z',data:CoreSchema.parse(before)});loaded.state.recipes[0].notes='Use fresh herbs';loaded.state.recipes[0].aiMarks.totalMinutes.status='edited';
+ assert.equal(await writeNotebook(db,'test-owner',loaded.state,loaded.version),2);
+ assert.equal(await writeNotebook(db,'test-owner',state,1),null);
+ const reloaded=await readNotebook(db,'test-owner');const backup=StateSchema.parse(JSON.parse(JSON.stringify(reloaded.state)));
+ assert.equal(backup.recipes[0].notes,'Use fresh herbs');assert.equal(backup.recipes[0].aiMarks.totalMinutes.status,'edited');assert.equal(backup.recipes[0].revisions[0].data.aiMarks.totalMinutes.status,'verified');assert.equal(backup.shopping[0].checked,true);
+ assert.equal(backup.recipes[0].yield,2);assert.equal(backup.recipes[0].cook,15);assert.equal(backup.recipes[0].totalMinutes,20);
+ assert.deepEqual((await readNotebook(db,'other-owner')).state,emptyState());db.raw.close();
+});
