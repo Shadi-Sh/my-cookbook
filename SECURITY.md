@@ -36,3 +36,7 @@ Report issues privately to the project owner; no public security inbox has been 
 ## Dependency review at handoff
 
 Production dependency advisory scan on 2026-10-01 after patching: {'info': 0, 'low': 0, 'moderate': 0, 'high': 0, 'critical': 0}. This snapshot is not a guarantee of future vulnerability status. Overrides are pinned in pnpm-workspace.yaml; preserve and periodically review them.
+
+## Recipe extraction
+
+Photo OCR runs on-device using same-origin pinned Tesseract worker, WASM and language files. No external OCR/LLM service receives recipe content. Images are restricted by type, bytes (10 MB) and decoded dimensions (40 million pixels), then resized to at most 2500 pixels per edge. Text has a 30,000-character limit and remains React-rendered plain text. The parser never executes recipe instructions, performs web requests, or evaluates markup. Existing fields require explicit replacement consent; saving and owner authorization use the existing editor/API validation. The source photo is not retained by OCR. Original text is retained only when the recipe is saved. Recognition accuracy is not guaranteed; imported amounts and steps require human review.

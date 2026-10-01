@@ -44,3 +44,6 @@ next-env.d.ts
 /.codex/
 /outputs/
 /work/
+
+# Reproducible, locally hosted OCR runtime generated from pinned packages.
+/public/ocr/

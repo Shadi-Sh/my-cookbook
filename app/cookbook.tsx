@@ -219,10 +219,11 @@ export default function Cookbook() {
   }
   function create() {
     setEditor(
-      newRecipe({
+      {...newRecipe({
         title: t("Neues Rezept", "New recipe"),
+        language: lang,
         yieldUnit: t("Portionen", "portions"),
-      }),
+      }), title: ""},
     );
   }
   function edit(r: Recipe) {
@@ -1821,8 +1822,8 @@ export default function Cookbook() {
                   </h2>
                   <p>
                     {t(
-                      "Lass einen Chat aus deinem Text oder Foto einen strukturierten Entwurf erstellen. Importiere das JSON und prüfe alle Angaben vor dem Speichern.",
-                      "Ask a chat to turn your text or photo into a structured draft. Import the JSON and review every field before saving.",
+                      "Nutze Foto oder Text im Rezepteditor zum automatischen Ausfüllen. Alternativ kannst du einen strukturierten JSON-Entwurf aus einem Chat importieren.",
+                      "Use photo or text in the recipe editor to fill fields automatically. Alternatively, import a structured JSON draft from a chat.",
                     )}
                   </p>
                   <button
@@ -1845,8 +1846,8 @@ export default function Cookbook() {
                   </button>
                   <p className="small-text">
                     {t(
-                      "Diese Version führt keine automatische Fotoanalyse oder Internet-Recherche durch. Der optionale Check im Editor verwendet einfache Regeln.",
-                      "This version does not automatically analyze photos or research the web. The optional editor check uses simple rules.",
+                      "Foto-Texterkennung ist verfügbar. Eine LLM-Analyse und Internetrecherche sind noch nicht verbunden. Der optionale Check im Editor verwendet einfache Regeln.",
+                      "Photo text recognition is available. LLM analysis and web research are not connected yet. The optional editor check uses simple rules.",
                     )}
                   </p>
                   <button
@@ -1874,8 +1875,11 @@ export default function Cookbook() {
       <Dialog open={importOpen} onOpenChange={setImportOpen}>
         <DialogContent className="import-dialog">
           <DialogTitle>
-            {t("Rezeptentwurf importieren", "Import recipe draft")}
+            {t("Rezept importieren", "Import recipe")}
           </DialogTitle>
+          <button className="primary" onClick={() => { setEditor({...newRecipe({title: "Draft", language: lang}), title: ""}); setImportOpen(false); }}>
+            {t("Aus Foto oder Text ausfüllen", "Fill from photo or text")}
+          </button>
           <DialogDescription>
             {t(
               "Kopiere das Prompt in einen Chat, füge dein Foto oder den Rezepttext hinzu und importiere die JSON-Antwort. Vor dem Speichern kannst du alles bearbeiten.",

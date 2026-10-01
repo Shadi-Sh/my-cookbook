@@ -8,13 +8,13 @@ A private recipe notebook for collecting, adapting and cooking recipes across Ge
 - Recipe editor, photo uploads, yield scaling, filters, favourites, cooked status, cooking events and notes.
 - Editable tags with global rename/merge, custom ingredient aliases, multilingual pantry presence matching.
 - Shopping list with unit-aware aggregation and checkboxes.
-- Structured JSON draft import; unknown quantities and times stay unknown.
+- Photo OCR and plain-text field extraction for German, English and Persian, plus structured JSON draft import; unknown quantities and times stay unknown.
 - Rule-based completeness check. Original JSON imports and up to 30 previous saved versions are retained.
 - Recipe and shopping print layouts (browser Save as PDF).
 - Versioned JSON backup/restore including referenced photos and recipe revisions.
 - Shared server storage and optimistic concurrency, private platform access and per-user authorization.
 
-Automatic OCR, automatic in-app LLM review, web comparison, semantic search, nutrition estimates and styled full cookbook exports are **not implemented**. No paid model integration is configured. Pantry matching checks presence rather than stock quantity. The supported ingredient dictionary is intentionally small.
+Automatic in-app LLM review, web comparison, semantic search, nutrition estimates and styled full cookbook exports are **not implemented**. No paid model integration is configured. Pantry matching checks presence rather than stock quantity. The supported ingredient dictionary is intentionally small.
 
 ## Architecture
 
@@ -43,3 +43,11 @@ No automated garbage collection exists yet. Deleted recipes' unreferenced photos
 Tests cover import validation, Persian normalization and aliases, unit-compatible aggregation, optional ingredients, backup state round-trip, same-origin mutation policy, real SQLite owner isolation, photo metadata ownership and version conflicts. They do not constitute a penetration test. Browser/device, full photo backup UI and live sign-in testing require a permitted browser/session; see PROJECT_STATUS.md for what was actually executed.
 
 The demo recipes and generated cookie image are examples, not the owner's tested recipe history. Do not publish private recipes or account data in a portfolio. Repository licensing and public publication have not been selected by the owner.
+
+## Photo and text import
+
+Open New recipe or Import → Fill from photo or text. Select the original language. Read a photo of a written recipe (JPEG/PNG/WebP, 10 MB maximum) or paste text; correct the recognized text, then select Fill recipe fields. Existing drafts require explicit replacement consent. Nothing is saved until the editor's Save action. Dish photos without written instructions cannot produce a recipe. Clear, single-column typed recipes with ingredient and method headings work best; handwriting and complex layouts may fail.
+
+Tesseract.js 6 performs OCR entirely on the device. Worker, WASM and eng/deu/fas language files are generated from pinned dependencies by scripts/prepare-ocr.mjs and served from the same origin, with no third-party OCR upload or model key. The recognized text becomes retained recipe source text; the input photo is not uploaded or kept by the extraction flow. Regular recipe photo attachment remains a separate action. Language models and web comparison remain deferred. A conservative deterministic parser extracts quantities, units, explicit timings, yield, ingredients and steps; it does not reason about recipes or infer missing metadata. Unrecognized fields remain editable.
+
+Verification: 13 automated tests, TypeScript, production build and an actual synthetic English recipe image recognized with the bundled OCR engine passed. Browser worker loading and mobile/Persian photo accuracy still require first-use verification. Production dependency audit reports no known vulnerabilities.

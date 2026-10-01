@@ -1447,3 +1447,9 @@ input[type="number"] {
     max-width: 100%;
   }
 }
+
+.recipe-importer {padding: 1.1rem; border: 1px solid var(--border); border-radius: 12px; background: var(--muted); margin-bottom: 1.25rem; display: grid; gap: .8rem;}
+.recipe-importer h2, .recipe-importer p {margin: 0;}
+.recipe-importer textarea {width: 100%; min-height: 150px;}
+.recipe-importer .primary {justify-self: start;}
+.recipe-importer .optional {white-space: normal;}

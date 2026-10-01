@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef } from "react";
+import RecipeImporter from "./recipe-importer";
 import { ImagePlus, Plus, X, Check } from "lucide-react";
 import {
   Dialog,
@@ -36,6 +37,8 @@ export default function RecipeEditor({
 }) {
   const [draft, setDraft] = useState(initial);
   const [uploading, setUploading] = useState(false);
+  const [recognizing, setRecognizing] = useState(false);
+  const [importWarnings, setImportWarnings] = useState<string[]>([]);
   const [checking, setChecking] = useState(true);
   const [warnings, setWarnings] = useState<string[] | null>(null);
   const [newTag, setNewTag] = useState("");
@@ -118,7 +121,7 @@ export default function RecipeEditor({
     <Dialog
       open
       onOpenChange={(v) => {
-        if (!v && !uploading && !busy) onClose();
+        if (!v && !uploading && !recognizing && !busy) onClose();
       }}
     >
       <DialogContent className="editor-dialog">
@@ -130,6 +133,11 @@ export default function RecipeEditor({
           )}
         </DialogDescription>
         <div className="editor-scroll">
+          <RecipeImporter lang={lang} hasContent={!!(draft.title || draft.ingredients.length || draft.steps.length)} onBusy={setRecognizing} onApply={(fields, issues) => {
+            setDraft(d => ({...d, ...fields, originalImport: d.originalImport || fields.originalImport || ""}));
+            setImportWarnings(issues); setWarnings(null);
+          }} />
+          {importWarnings.length > 0 && <div className="warning-box" role="status"><strong>{t("Entwurf ausgefüllt – bitte prüfen", "Draft filled — please review")}</strong><ul>{importWarnings.map((v,i) => <li key={i}>{v}</li>)}</ul></div>}
           <div className="editor-two">
             <Field label={t("Titel", "Title")}>
               <input
@@ -525,14 +533,14 @@ export default function RecipeEditor({
         <div className="editor-footer">
           <button
             className="secondary"
-            disabled={busy || uploading}
+            disabled={busy || uploading || recognizing}
             onClick={onClose}
           >
             {t("Abbrechen", "Cancel")}
           </button>
           <button
             className="primary"
-            disabled={busy || uploading}
+            disabled={busy || uploading || recognizing}
             onClick={() => void save()}
           >
             <Check size={17} />
