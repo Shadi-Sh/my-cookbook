@@ -1,0 +1,16 @@
+name: Checks
+on: [push, pull_request]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.18.0'
+      - run: npm run install:ci
+      - run: npm run test
+      - run: npm run typecheck
+      - run: npm run build

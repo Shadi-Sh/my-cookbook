@@ -1,0 +1,11 @@
+{
+  "name": "My Cookbook",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm",
+  "remoteUser": "node",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/my-cookbook,type=bind",
+  "workspaceFolder": "/workspaces/my-cookbook",
+  "mounts": ["source=my-cookbook-node-modules,target=/workspaces/my-cookbook/node_modules,type=volume"],
+  "forwardPorts": [],
+  "containerEnv": {"NODE_ENV": "development"},
+  "customizations": {"vscode": {"settings": {"terminal.integrated.defaultProfile.linux": "bash"}}}
+}

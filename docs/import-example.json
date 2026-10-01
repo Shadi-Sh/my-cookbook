@@ -1,0 +1,14 @@
+{
+  "title": "Example recipe",
+  "language": "en",
+  "yield": 2,
+  "yieldUnit": "portions",
+  "prep": null,
+  "cook": null,
+  "rest": null,
+  "ingredients": [{"name": "potato", "quantity": 500, "unit": "g", "optional": false, "note": "diced"}],
+  "steps": ["Replace this example with the actual method."],
+  "tags": ["To try"],
+  "notes": "Synthetic example. Missing information must be verified.",
+  "sourceText": "Original recipe text goes here."
+}
