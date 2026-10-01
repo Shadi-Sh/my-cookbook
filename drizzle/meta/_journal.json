@@ -8,6 +8,13 @@
       "when": 1790874078186,
       "tag": "0000_salty_azazel",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1790880328022,
+      "tag": "0001_worthless_rhino",
+      "breakpoints": true
     }
   ]
 }

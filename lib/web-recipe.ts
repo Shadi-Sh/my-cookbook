@@ -68,7 +68,7 @@ export function recipesFromHTML(html: string, source: string, fallback: 'de'|'en
     const method = steps(r.recipeInstructions);
     const sourceText = [clean(r.name), 'Ingredients', ...ingredients, 'Instructions', ...method].join('\n');
     const extracted = extractRecipe(sourceText,language);
-    const fields: Partial<Core> = {...extracted.fields, title:clean(r.name).slice(0,180), description:clean(r.description).slice(0,10000), steps:method.map(s=>s.slice(0,4000)), source, originalImport:JSON.stringify(r).slice(0,100000), category:strings(r.recipeCategory).join(', ').slice(0,80), cuisine:strings(r.recipeCuisine).join(', ').slice(0,80), prep:duration(r.prepTime), cook:duration(r.cookTime)};
+    const fields: Partial<Core> = {...extracted.fields, title:clean(r.name).slice(0,180), description:clean(r.description).slice(0,10000), steps:method.map(s=>s.slice(0,4000)), source, originalImport:JSON.stringify(r).slice(0,100000), category:strings(r.recipeCategory).join(', ').slice(0,80), cuisine:strings(r.recipeCuisine).join(', ').slice(0,80), prep:duration(r.prepTime), cook:duration(r.cookTime), totalMinutes:duration(r.totalTime), aiMarks:{}};
     const warnings = ['Aus der Webseite übernommen, nicht von KI geschätzt. Bitte alle Angaben prüfen. / Imported from the website, not AI estimates. Review all fields.'];
     const rawYield = strings(r.recipeYield)[0] ?? (typeof r.recipeYield === 'number' ? String(r.recipeYield) : '');
     const y = rawYield.match(/^(\d+(?:[.,]\d+)?)\s*([^\d]*)$/);

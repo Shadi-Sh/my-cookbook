@@ -1,6 +1,7 @@
 "use client";
 import { useState, useRef } from "react";
 import RecipeImporter from "./recipe-importer";
+import RecipeAIPanel from './recipe-ai-panel';
 import { ImagePlus, Plus, X, Check } from "lucide-react";
 import {
   Dialog,
@@ -46,7 +47,7 @@ export default function RecipeEditor({
   const t = (de: string, en: string) => (lang === "de" ? de : en);
   const file = useRef<HTMLInputElement>(null);
   function set<K extends keyof Recipe>(key: K, value: Recipe[K]) {
-    setDraft((d) => ({ ...d, [key]: value }));
+    setDraft((d) => ({ ...d, [key]: value, ...(['prep','cook','rest'].includes(key) ? {totalMinutes:null} : {}), aiMarks: {...d.aiMarks, ...(d.aiMarks[key] ? {[key]:{...d.aiMarks[key],status:'edited' as const}} : {}), ...(['prep','cook','rest'].includes(key)&&d.aiMarks.totalMinutes ? {totalMinutes:{...d.aiMarks.totalMinutes,status:'edited' as const}} : {})} }));
     setWarnings(null);
   }
   function ingredient(i: number, key: keyof Ingredient, value: unknown) {
@@ -133,11 +134,13 @@ export default function RecipeEditor({
           )}
         </DialogDescription>
         <div className="editor-scroll">
+          <RecipeAIPanel draft={draft} lang={lang} onBusy={setRecognizing} onApply={fields=>{setDraft(d=>({...d,...fields}));setWarnings(null);}}/>
           <RecipeImporter lang={lang} hasContent={!!(draft.title || draft.ingredients.length || draft.steps.length)} onBusy={setRecognizing} onApply={(fields, issues) => {
-            setDraft(d => ({...d, ...fields, originalImport: d.originalImport || fields.originalImport || ""}));
+            setDraft(d => ({...d, ...fields, aiMarks:{}, originalImport: d.originalImport || fields.originalImport || ""}));
             setImportWarnings(issues); setWarnings(null);
           }} />
           {importWarnings.length > 0 && <div className="warning-box" role="status"><strong>{t("Entwurf ausgefüllt – bitte prüfen", "Draft filled — please review")}</strong><ul>{importWarnings.map((v,i) => <li key={i}>{v}</li>)}</ul></div>}
+          {Object.keys(draft.aiMarks).length>0 && <section className="warning-box"><strong>{t('Herkunft der KI-Felder','AI field origins')}</strong><p>{t('„So übernommen“ bedeutet ungeprüft. Die Herkunft bleibt gespeichert.','“Accepted as is” means unverified. Origins remain saved.')}</p>{Object.entries(draft.aiMarks).map(([key,m])=><div key={key}><strong>{({title:'Titel',description:'Beschreibung',category:'Kategorie',cuisine:'Küche',yield:'Anzahl',yieldUnit:'Einheit',prep:'Vorbereitung',cook:'Garen',rest:'Ruhe',totalMinutes:'Gesamtzeit',ingredients:'Zutaten',steps:'Zubereitung',notes:'Notizen'} as Record<string,string>)[key] ?? key}: {m.origin==='estimated'?t('KI-Schätzung','AI estimate'):t('Von KI übernommen','AI extraction')}</strong><p>{m.reason}</p><select aria-label={`${key} ${t('Prüfstatus','review status')}`} value={m.status} onChange={e=>setDraft(d=>({...d,aiMarks:{...d.aiMarks,[key]:{...m,status:e.target.value as typeof m.status}}}))}><option value="unreviewed">{t('Ungeprüft','Unreviewed')}</option><option value="accepted">{t('So übernommen','Accepted as is')}</option><option value="verified">{t('Geprüft','Verified')}</option><option value="edited">{t('Von dir geändert','Edited by you')}</option></select></div>)}</section>}
           <div className="editor-two">
             <Field label={t("Titel", "Title")}>
               <input
@@ -228,7 +231,7 @@ export default function RecipeEditor({
                 onChange={(e) => set("yieldUnit", e.target.value)}
               />
             </Field>
-            {(["prep", "cook", "rest"] as const).map((k) => (
+            {(["prep", "cook", "rest", "totalMinutes"] as const).map((k) => (
               <Field
                 key={k}
                 label={
@@ -236,7 +239,7 @@ export default function RecipeEditor({
                     ? t("Vorbereitung (min)", "Prep (min)")
                     : k === "cook"
                       ? t("Garen (min)", "Cook (min)")
-                      : t("Ruhe (min)", "Rest (min)")
+                      : k === 'rest' ? t("Ruhe (min)", "Rest (min)") : t('Gesamtzeit (min)','Total time (min)')
                 }
               >
                 <input

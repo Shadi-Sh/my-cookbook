@@ -29,6 +29,13 @@ export const CoreSchema = z
     prep: z.number().int().nonnegative().max(10080).nullable().default(null),
     cook: z.number().int().nonnegative().max(10080).nullable().default(null),
     rest: z.number().int().nonnegative().max(10080).nullable().default(null),
+    totalMinutes: z.number().int().nonnegative().max(10080).nullable().default(null),
+    aiMarks: z.record(z.string().regex(/^(title|description|category|cuisine|yield|yieldUnit|prep|cook|rest|totalMinutes|ingredients|steps|notes)$/), z.object({
+      origin: z.enum(['extracted','estimated']),
+      status: z.enum(['unreviewed','accepted','verified','edited']),
+      reason: z.string().max(1000),
+      originalValue: z.string().max(30000),
+    }).strict()).default({}),
     ingredients: z.array(IngredientSchema).max(100).default([]),
     steps: z.array(z.string().min(1).max(4000)).max(100).default([]),
     tags: z.array(z.string().min(1).max(60)).max(40).default([]),
@@ -192,6 +199,7 @@ export function matches(
   );
 }
 export function total(r: Core) {
+  if (r.totalMinutes !== null) return r.totalMinutes;
   return r.prep === null || r.cook === null || r.rest === null
     ? null
     : r.prep + r.cook + r.rest;
@@ -254,7 +262,7 @@ export function review(r: Core) {
     out.push("Total time is unknown / Gesamtzeit ist unbekannt");
   for (const i of r.ingredients)
     if (i.quantity === null && !i.optional)
-      out.push(`${i.name}: amount unknown / Menge unbekannt`);
+      out.push(/\d\s*[-–]\s*\d/.test(i.name+' '+i.note) ? `${i.name}: quantity range preserved; check before scaling / Mengenbereich erhalten; vor dem Skalieren prüfen` : `${i.name}: amount unknown / Menge unbekannt`);
   return out;
 }
 export function imageType(b: Uint8Array) {

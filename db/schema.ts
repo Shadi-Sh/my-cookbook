@@ -12,3 +12,7 @@ export const attachments = sqliteTable("attachments", {
   mime: text("mime").notNull(),
   size: integer("size").notNull(),
 });
+export const aiUsage = sqliteTable('ai_usage', {
+  day: text('day').primaryKey(),
+  requests: integer('requests').notNull(),
+});

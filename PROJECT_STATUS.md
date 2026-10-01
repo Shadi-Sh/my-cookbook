@@ -1,5 +1,9 @@
 # Project status
 
+## Cloudflare AI preparation
+
+Added a default-disabled Cloudflare Workers AI endpoint, up to four image pages combined in user-controlled order, output DE/EN, explicit data-send consent, optional time estimates, preview/apply/discard, and fill-missing-only merging. Origins and independent review states persist in recipes, revisions and backups. Existing manual imports clear old AI marks. Known webpage totalTime is now imported and can be edited separately. Added atomic shared daily cap (5 requests, failed requests count), provider/input/output bounds, no retries or paid fallback. Connection requires server secrets, confirmed free account and owner-accepted model license. No account exists yet, so real provider and image quality verification remain blocked. Tests use synthetic provider output and must not be described as real AI quality tests. Origins for ingredients and steps apply to whole groups in this first slice; individual ingredient/step markings remain future work.
+
 ## October 1 website import update
 
 Added authenticated public recipe-link import for a visible allowlist of 20 recipe publishers. Every redirect must remain on the exact approved root/www hosts over HTTPS. JSON-LD Recipe arrays/graphs and nested instruction sections are supported. Multiple recipes are offered individually; selected data opens in the existing editable draft with explicit replacement consent. Source URL and original structured data are preserved. Missing times remain unknown; no AI service or paid fallback is connected. Unsupported sites, blocked fetches and missing structured data show a text/photo fallback message. Language is preserved, not translated.

@@ -691,6 +691,7 @@ export default function Cookbook() {
                     {active.demo ? " · DEMO" : ""}
                   </p>
                   <h1 dir="auto">{active.title}</h1>
+                  {Object.keys(active.aiMarks).length>0 && <details className="warning-box"><summary>{t('KI-Angaben und Prüfstatus','AI fields and review status')}</summary>{Object.entries(active.aiMarks).map(([key,m])=><p key={key}><strong>{key}: {m.origin==='estimated'?t('KI-Schätzung','AI estimate'):t('KI-Übernahme','AI extraction')}</strong> · {({unreviewed:t('Ungeprüft','Unreviewed'),accepted:t('So übernommen','Accepted as is'),verified:t('Geprüft','Verified'),edited:t('Von dir geändert','Edited by you')})[m.status]}<br/>{m.reason}</p>)}</details>}
                   {active.titleFa && active.title !== active.titleFa && (
                     <p className="translated" dir="auto">
                       {active.titleFa}
