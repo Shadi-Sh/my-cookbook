@@ -1,3 +1,4 @@
+import {errorDiagnostic} from "./diagnostics.ts";
 import { env } from "cloudflare:workers";
 import { getChatGPTUser } from "@/app/chatgpt-auth";
 import { accessAllowed } from "@/lib/storage";
@@ -23,7 +24,8 @@ export async function owner() {
   return (await getChatGPTUser())?.userId ?? null;
 }
 export function json(value: unknown, status = 200) {
-  return Response.json(value, {
+  const diagnostic=status>=400?errorDiagnostic(status):undefined;
+  return Response.json(diagnostic&&value&&typeof value==="object"?{...value,...diagnostic}:value, {
     status,
     headers: {
       "Cache-Control": "private, no-store",

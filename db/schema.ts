@@ -11,6 +11,8 @@ export const attachments = sqliteTable("attachments", {
   objectKey: text("object_key").notNull(),
   mime: text("mime").notNull(),
   size: integer("size").notNull(),
+  deleted: integer("deleted").notNull().default(0),
+  createdAt: integer("created_at").notNull().default(0),
 });
 export const aiUsage = sqliteTable('ai_usage', {
   day: text('day').primaryKey(),

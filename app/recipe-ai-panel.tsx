@@ -32,7 +32,7 @@ export default function RecipeAIPanel({draft,lang,onApply,onBusy}:{draft:Core;la
   try{
    const image=missingOnly?undefined:await combine();
    const response=await fetch('/api/recipe-ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:missingOnly?JSON.stringify({title:draft.title,description:draft.description,ingredients:draft.ingredients,steps:draft.steps,prep:draft.prep,cook:draft.cook,rest:draft.rest,totalMinutes:draft.totalMinutes}):text,image,language:lang,estimate,consent})});
-   const data=await response.json() as {error?:string;fields:Partial<Core>};if(!response.ok)throw Error(data.error||t('KI-Auswertung fehlgeschlagen.','AI extraction failed.'));
+   const data=await response.json() as {error?:string;requestId?:string;fields:Partial<Core>};if(!response.ok)throw Error((data.error||t('KI-Auswertung fehlgeschlagen.','AI extraction failed.'))+(data.requestId?` (Ref: ${data.requestId})`:''));
    setResult(mergeAIFields(draft,data.fields,missingOnly));
   }catch(e){setError(e instanceof Error?e.message:t('KI-Auswertung fehlgeschlagen.','AI extraction failed.'));}finally{setBusy(false);onBusy(false);void refreshStatus();}
  }
