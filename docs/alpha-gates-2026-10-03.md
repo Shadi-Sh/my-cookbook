@@ -46,3 +46,9 @@ Benötigt: zweites echtes ChatGPT-Konto und gezielte Viewer-Freigabe für genau 
 6. Zugriff des Testkontos nach Abschluss entsprechend vereinbartem Alpha-Zugang beibehalten oder entfernen. Keine Freigabeänderung ohne konkretes Konto.
 
 Zweibesitzer-SQL-Tests aus PR #4 bleiben ergänzende Evidenz. Sie schließen den fehlenden Live-Zweikontotest nicht.
+
+## Nutzerbericht: echtes Smartphone am 3. Oktober 2026
+
+Vom Nutzer praktisch bestätigt, ohne KI: Login, mobile Navigation, bestehende Rezepte öffnen, Suche, Bearbeiten und Speichern, Reload, Bildschirmtastatur/Scrolling sowie allgemeine mobile UI. Persönliches KI-Tageskontingent war bereits erreicht; der vollständige KI-Bildimport wurde dadurch blockiert und wird nach dem nächsten UTC-Reset separat getestet. Dies ist ein Quotenhindernis, kein belegter Erkennungsfehler oder fehlender Produktbedarf.
+
+Smartphone-Kernflow bis auf KI-Bildimport vom Nutzer als bestanden gemeldet. Geräte-/Browserdetails wurden nicht angegeben. Foto-Backupdownload und Restore sind in diesem Bericht nicht gesondert bestätigt; der bisherige Nachweis dafür bleibt lokal. Keine vollständige Alpha-ready-Freigabe: Smartphone-KI-Bildimport, zwei echte Live-Konten und aktualisierte tatsächliche Cloudflare-Neuronreserve bleiben offen.

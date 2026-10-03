@@ -73,3 +73,9 @@ Migration `0003_empty_zaran.sql` ist additiv. Alte `ai_usage`-Daten bleiben unve
 DE/EN-Bildflow ist bestanden; physisches Smartphone und zwei echte Live-Konten bleiben offen. Provider-Verbrauch und Reserve: siehe `alpha-ai-usage.md`. Keine vollständige Alpha-ready-Meldung durch diesen Change.
 
 Persönliche Quota privat live veröffentlicht; Live-Anzeige 2/2 → 1/2 nach erfolgreichem synthetischem Textimport bestätigt. Zweiter Bildversuch gestartet, anschließend Browser-Sicherheitsprüfung nicht verfügbar. Tatsächliche Dashboard-Neuronreserve und persönlicher 0/2-Fallback bleiben praktisch offen; siehe Verbrauchsprotokoll. GitHub CI für veröffentlichten Code bestanden. Keine Alpha-ready-Freigabe.
+
+## Nutzerbericht: echtes Smartphone am 3. Oktober 2026
+
+Vom Nutzer praktisch bestätigt, ohne KI: Login, mobile Navigation, bestehende Rezepte öffnen, Suche, Bearbeiten und Speichern, Reload, Bildschirmtastatur/Scrolling sowie allgemeine mobile UI. Persönliches KI-Tageskontingent war bereits erreicht; der vollständige KI-Bildimport wurde dadurch blockiert und wird nach dem nächsten UTC-Reset separat getestet. Dies ist ein Quotenhindernis, kein belegter Erkennungsfehler oder fehlender Produktbedarf.
+
+Smartphone-Kernflow bis auf KI-Bildimport vom Nutzer als bestanden gemeldet. Geräte-/Browserdetails wurden nicht angegeben. Foto-Backupdownload und Restore sind in diesem Bericht nicht gesondert bestätigt; der bisherige Nachweis dafür bleibt lokal. Keine vollständige Alpha-ready-Freigabe: Smartphone-KI-Bildimport, zwei echte Live-Konten und aktualisierte tatsächliche Cloudflare-Neuronreserve bleiben offen.
