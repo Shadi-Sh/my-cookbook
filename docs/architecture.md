@@ -42,7 +42,8 @@ Importe erzeugen bearbeitbare Entwürfe. Erst bewusstes Speichern schreibt das N
 |---|---|---|
 | `notebooks` | `owner` Primärschlüssel, `payload`, `version`, `updated_at` | Ein JSON-Notizbuch je Besitzer. Version dient als optimistische Sperre |
 | `attachments` | `id`, `owner`, `object_key`, `mime`, `size` | Besitzerzuordnung zum R2-Objekt; Foto selbst liegt nicht in D1 |
-| `ai_usage` | `day` Primärschlüssel, `requests` | Globaler Tageszähler der Anwendung, nicht je Nutzer |
+| `ai_usage` | `day` Primärschlüssel, `requests` | Historischer globaler Zähler; seit persönlicher Alpha-Quota nicht mehr verwendet |
+| `ai_user_usage` | `owner` + `day` Primärschlüssel, `requests` | Atomare Reservierung: 2 KI-Versuche je authentifiziertem Nutzer/UTC-Tag |
 
 Notizbuch: Rezepte, Vorrat, Tags, benutzerdefinierte Zutaten-Aliase und Einkaufsliste. Ein Rezept enthält Titel und optionale Übersetzungstitel, Sprache, Beschreibung, Kategorie, Küche, Portionen/Einheit, Vorbereitungs-/Koch-/Ruhe-/Gesamtzeit, Zutaten, Schritte, Tags, Notizen, Quelle, Quelltext, Originalimport, Bildreferenz, Favorit-/Gekocht-Status, Kochhistorie und bis zu 30 Revisionen.
 
@@ -74,7 +75,7 @@ Alle APIs verlangen Plattformidentität; Schreib-/Importrequests verlangen zusä
 - **Rezept-Publisher:** erhalten serverseitige Seitenabrufe, einschließlich eingegebener URL/Query. Keine Nutzer-Cookies oder Anmeldedaten werden absichtlich weitergegeben. URL-Import verwendet keine KI und übersetzt nicht automatisch den Seiteninhalt.
 - **GitHub:** privates Repository, Pull Requests und CI. Keine produktiven Rezepte oder Secrets gehören ins Repository.
 
-Die App reserviert atomar maximal fünf KI-Aufrufe pro UTC-Tag, zählt Fehlschläge mit und nutzt keine automatische Wiederholung oder bezahlte Ausweichlösung. Die Free-only-Variable dokumentiert eine bestätigte Konfiguration; sie prüft weder Provider-Abrechnung noch Kontoverbrauch. Andere Anwendungen desselben Cloudflare-Kontos können ebenfalls Kontingent nutzen. **Fünf Anfragen sind keine Euro-Kostenobergrenze.** Vor Änderung des Modells, Aktivierung kostenpflichtiger Nutzung oder öffentlicher Freigabe müssen tatsächliche Provider-Einstellungen, Tarife, Aufbewahrung und Verarbeitungsbedingungen separat geprüft werden. Hier wurde kein neuer Dienst angeschlossen.
+Die App reserviert atomar maximal zwei KI-Versuche je authentifiziertem Nutzer und UTC-Tag, zählt Fehlschläge mit und nutzt keine automatische Wiederholung oder bezahlte Ausweichlösung. Die Free-only-Variable dokumentiert eine bestätigte Konfiguration; sie prüft weder Provider-Abrechnung noch Kontoverbrauch. Andere Anwendungen desselben Cloudflare-Kontos können ebenfalls Kontingent nutzen. **Die persönliche Versuchszahl ersetzt nicht die kontoweite Providergrenze.** Vor Änderung des Modells, Aktivierung kostenpflichtiger Nutzung oder öffentlicher Freigabe müssen tatsächliche Provider-Einstellungen, Tarife, Aufbewahrung und Verarbeitungsbedingungen separat geprüft werden. Hier wurde kein neuer Dienst angeschlossen.
 
 ## 6. Security und Privacy: umgesetzt vs. offen
 
@@ -109,7 +110,7 @@ GitHub Actions prüft Pull Requests und main mit Node 24, Lockfile und SHA-gepin
 | Auth | Sites-Identität: bereits vorhanden, Plattformbindung. Eigener Auth-Anbieter: portabel, zusätzlicher Dienst und Betrieb | Bestehenden Auth-Adapter behalten; bei Hostwechsel vor Freigabe ersetzen, keine eigenen Passwörter |
 | Extraktion | Deterministischer Text/JSON-LD-Import: günstig, begrenzt. Browser-OCR: lokal, weniger genau. Optional KI: flexibler, Drittanbieter und Kosten | Alle bestehenden Wege behalten; KI bleibt optional, mit einem Provider und manueller Prüfung |
 | Mehrsprachigkeit | Direkte DE/EN-Texte: einfach, bei Wachstum schwerer wartbar. i18n-Katalog: zentraler, Refactoring | DE/EN-UI und vorhandenes FA-Datenmodell behalten. i18n-Katalog bei nächster relevanter UI-Erweiterung; FA-Bilder nicht neu priorisieren |
-| Kostenkontrolle | Requestzahl: einfach, aber kein Budgetbeweis. Providergrenzen: kontoweit. Eigener Token-/Kostenledger: Zusatzaufwand und Modellabhängigkeit | Free-only-Betrieb im Konto verifizieren, 5/Tag behalten; keinen eigenen Abrechnungsdienst bauen |
+| Kostenkontrolle | Requestzahl: einfach, aber kein Budgetbeweis. Providergrenzen: kontoweit. Eigener Token-/Kostenledger: Zusatzaufwand und Modellabhängigkeit | Free-only-Betrieb im Konto verifizieren, 2 je Nutzer/UTC-Tag für Alpha; keinen eigenen Abrechnungsdienst bauen |
 | Monitoring | Keine eigenen Logs: wenig Daten, schwache Diagnose. Reduzierte Metadatenlogs: hilfreich. Externe Observability-Plattform: Zusatzdienst | Wenige bereinigte Metadaten über bestehende Plattform, keine neue Plattform |
 | Fotos löschen | Sofortige Löschung: gefährdet Revisionen. Referenzbasierte Bereinigung: sicherer, braucht Scan/Frist | Erst referenzbasierte manuelle/admin Bereinigung; Cronjobs erst bei tatsächlichem Bedarf |
 

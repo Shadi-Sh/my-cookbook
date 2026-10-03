@@ -1,6 +1,6 @@
 # MVP Alpha: Import → Review → Save → Find again
 
-Prüfstand: 2026-10-02 (Europe/Berlin). Fokus dieses Changes: Datenintegrität und sichere private Alpha-Nutzung. Kein neuer KI-Anbieter, keine zusätzliche Infrastruktur, keine Änderung der Sites-Freigabe. Parallele Product-Metriken werden separat vorbereitet und sind nicht Teil dieses Changes.
+Prüfstand: 2026-10-03 (Europe/Berlin). Fokus dieses Changes: Datenintegrität und sichere private Alpha-Nutzung. Kein neuer KI-Anbieter, keine zusätzliche Infrastruktur, keine Änderung der Sites-Freigabe. Parallele Product-Metriken werden separat vorbereitet und sind nicht Teil dieses Changes.
 
 ## Ergebnis und Grenzen
 
@@ -20,7 +20,7 @@ Prüfstand: 2026-10-02 (Europe/Berlin). Fokus dieses Changes: Datenintegrität u
 | Mobile Text-User-Journey | 390 × 844 Browserviewport: DE-Import, Bereich/Einheit bearbeiten, Foto, speichern, Reload, Suche | Praktisch lokal bestanden |
 | DE-Bild-OCR | Live: Bild → Entwurf → Review → Save → Reload → Suche, inklusive Foto | Bestanden am 03.10.; Nachweis in alpha-gates-2026-10-03.md |
 | EN-Bild-OCR / KI-Bildreview | Live EN-OCR und zweiseitiger KI-Import mit DE-Ausgabe, Review-Marks, Save, Reload, Suche | Bestanden am 03.10.; echter Smartphone-Test separat offen |
-| Cloudflare-Tarif / Konfiguration | Aktueller Workers-Plan Free in Dashboard; konfiguriertes Konto passt; Token aktiv, Modell im Katalog verfügbar | Lesend bestätigt; keine Modellaufrufe verbraucht |
+| Cloudflare-Tarif / Konfiguration | Aktueller Workers-Plan Free in Dashboard; konfiguriertes Konto passt; Token aktiv, Modell im Katalog verfügbar | Free erneut bestätigt; synthetische Messaufrufe dokumentiert in alpha-ai-usage.md |
 | Inhaltsfreie Fehlerdiagnostik | Fehlerstatus, fester HTTP-Code und erzeugte Request-ID; Test auf erlaubte Keys | Implementiert und getestet |
 
 Ein mobiler Browserviewport ersetzt keinen Test auf echtem iOS-/Android-Gerät. Produktions-D1/R2-Restore wurde bewusst nicht auf echten Nutzerdaten ausgeführt. Der lokale Roundtrip verwendete die gleichen API-/Backupfunktionen auf der lokalen Worker-, D1- und R2-Laufzeit mit synthetischem Material. Durch die danach nicht verfügbare administrative Browserrichtlinien-Prüfung bleiben die Bildprüfungen offen; keine Umgehung wurde versucht.
@@ -37,7 +37,7 @@ Ein mobiler Browserviewport ersetzt keinen Test auf echtem iOS-/Android-Gerät. 
 
 ## Kosten: sicherer Alpha-Betrieb
 
-Cloudflare wurde nur lesend geprüft; kein Upgrade, AI Gateway oder bezahlter Fallback eingerichtet. Bestätigt im Dashboard: Workers **Free**, zum geprüften konfigurierten Konto. Tokenprüfung: aktiv; vorhandenes Gemma-Modell im Konto-Katalog sichtbar. Produktions-Secrets werden von Sites maskiert und bleiben unverändert; ihre Werte werden nicht veröffentlicht.
+Cloudflare wurde vor der autorisierten Verbrauchsmessung lesend geprüft; kein Upgrade, AI Gateway oder bezahlter Fallback eingerichtet. Bestätigt im Dashboard: Workers **Free**, zum geprüften konfigurierten Konto. Tokenprüfung zuvor aktiv; synthetische Modellanfragen jetzt erfolgreich. Produktions-Secrets werden von Sites maskiert und bleiben unverändert; ihre Werte werden nicht veröffentlicht.
 
 [Offizielle Workers-AI-Preise](https://developers.cloudflare.com/workers-ai/platform/pricing/): 10.000 Neurons pro UTC-Tag kostenlos, kontoweit. Weitere Nutzung erfordert Paid; im Free-Plan werden überschrittene Grenzen abgewiesen. Das ausgewählte Modell kostet außerhalb des Freikontingents derzeit 0,10 USD je Million Eingabetokens und 0,30 USD je Million Ausgabetokens. Kein Upgrade vornehmen. Die Anwendung nutzt direkte REST-Inferenz, keinen Gateway mit Credits. Der atomare persönliche Zähler begrenzt auf zwei Versuche je Nutzer und UTC-Tag, einschließlich Fehlern; 3.000 maximale Ausgabetokens, 45 Sekunden Timeout, keine automatischen Wiederholungen. Diese Begrenzungen sind zusätzliche Schutzmaßnahmen, kein Ersatz für den Free-Tarif. Ein späterer manueller Tarifwechsel im Dashboard verändert die Kostensituation und verlangt vorherige erneute Prüfung; dann KI zunächst mit `CF_AI_FREE_ONLY_CONFIRMED=false` deaktivieren. Manuelle Library und andere Imports bleiben unabhängig nutzbar.
 
@@ -71,3 +71,5 @@ Migration `0003_empty_zaran.sql` ist additiv. Alte `ai_usage`-Daten bleiben unve
 95 Tests, TypeScript und Worker-Build bestanden: getrennte Besitzer, UTC-Reset inklusive Jahreswechsel, Status ohne Verbrauch, Fehler ohne Refund, überlappende Reservierungen und sechs echte parallele SQLite-Verbindungen mit gemeinsamem Datenbankfile. Letztere akzeptieren insgesamt genau vier Reservierungen für zwei Besitzer.
 
 DE/EN-Bildflow ist bestanden; physisches Smartphone und zwei echte Live-Konten bleiben offen. Provider-Verbrauch und Reserve: siehe `alpha-ai-usage.md`. Keine vollständige Alpha-ready-Meldung durch diesen Change.
+
+Persönliche Quota privat live veröffentlicht; Live-Anzeige 2/2 → 1/2 nach erfolgreichem synthetischem Textimport bestätigt. Zweiter Bildversuch gestartet, anschließend Browser-Sicherheitsprüfung nicht verfügbar. Tatsächliche Dashboard-Neuronreserve und persönlicher 0/2-Fallback bleiben praktisch offen; siehe Verbrauchsprotokoll. GitHub CI für veröffentlichten Code bestanden. Keine Alpha-ready-Freigabe.
