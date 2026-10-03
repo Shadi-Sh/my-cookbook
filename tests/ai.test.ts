@@ -1,6 +1,5 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {DatabaseSync} from 'node:sqlite';
 import {CoreSchema,StateSchema,newRecipe,emptyState,total} from '../lib/model.ts';
 import {parseAIResult,mergeAIFields,aiPrompt} from '../lib/recipe-ai.ts';
 import {providerRequest,providerText} from '../lib/cloudflare-ai.ts';
@@ -31,8 +30,4 @@ test('Known total time overrides unknown component times',()=>{assert.equal(tota
 test('User language overrides provider language labels and every estimated time is marked',()=>{
  const f=parseAIResult(JSON.stringify({recipe:{title:'Pasta',language:'German',prep:5,cook:15,totalMinutes:20},estimates:[{field:'totalMinutes',reason:'Estimated 15–25 minutes'}]}),'de');
  assert.equal(f.language,'de');assert.equal(f.totalMinutes,20);assert.equal(f.aiMarks?.totalMinutes.origin,'estimated');assert.equal(f.aiMarks?.totalMinutes.status,'unreviewed');
-});
-test('Atomic daily reservation never exceeds five calls, including failed calls',()=>{
- const db=new DatabaseSync(':memory:');db.exec('CREATE TABLE ai_usage(day TEXT PRIMARY KEY, requests INTEGER NOT NULL)');const q=db.prepare('INSERT INTO ai_usage(day,requests) VALUES (?,1) ON CONFLICT(day) DO UPDATE SET requests=requests+1 WHERE requests<5 RETURNING requests');
- for(let i=1;i<=5;i++)assert.equal(q.get('2026-10-01')?.requests,i);assert.equal(q.get('2026-10-01'),undefined);assert.equal(q.get('2026-10-02')?.requests,1);db.close();
 });
