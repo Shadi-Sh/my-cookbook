@@ -79,3 +79,7 @@ Persönliche Quota privat live veröffentlicht; Live-Anzeige 2/2 → 1/2 nach er
 Vom Nutzer praktisch bestätigt, ohne KI: Login, mobile Navigation, bestehende Rezepte öffnen, Suche, Bearbeiten und Speichern, Reload, Bildschirmtastatur/Scrolling sowie allgemeine mobile UI. Persönliches KI-Tageskontingent war bereits erreicht; der vollständige KI-Bildimport wurde dadurch blockiert und wird nach dem nächsten UTC-Reset separat getestet. Dies ist ein Quotenhindernis, kein belegter Erkennungsfehler oder fehlender Produktbedarf.
 
 Smartphone-Kernflow bis auf KI-Bildimport vom Nutzer als bestanden gemeldet. Geräte-/Browserdetails wurden nicht angegeben. Foto-Backupdownload und Restore sind in diesem Bericht nicht gesondert bestätigt; der bisherige Nachweis dafür bleibt lokal. Keine vollständige Alpha-ready-Freigabe: Smartphone-KI-Bildimport, zwei echte Live-Konten und aktualisierte tatsächliche Cloudflare-Neuronreserve bleiben offen.
+
+## Text-KI-Fehler vom 5. Oktober 2026
+
+Live reproduziert: Gemma kann bei fehlender Portionsangabe yield:null liefern; der strenge Parser lehnte dann den gesamten Entwurf ab. Minimalfix lässt diesen unbekannten optionalen Wert weg. Sichere Fehlerkategorien trennen Timeout, Provider-Antwort, generiertes JSON und Schema; keine Rezeptinhalte/Secrets in Logs. 102 Tests, TypeScript, Build und direkte Live-Verarbeitung erfolgreich; privat veröffentlicht. Die konkrete alte Nutzerreferenz ist nicht rückwirkend zugeordnet. iPhone-End-to-End-Wiederholung mit verfügbarem Kontingent bleibt offen. Details: ai-text-diagnosis-2026-10-05.md.
