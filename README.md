@@ -1,53 +1,43 @@
 # My Cookbook · Mein Kochbuch
 
-A private recipe notebook for collecting, adapting and cooking recipes across German, English and Persian. Built with AI assistance from Codex from the owner's requirements. This is a first release, not a security certification or finished automatic AI product.
+A private recipe notebook for collecting recipes from text, images and supported websites, reviewing the extracted draft, saving it and finding it again. Built with Codex assistance from the owner's requirements and technical decisions.
+
+**Alpha feature freeze:** [baseline and limits](docs/alpha-freeze.md). No new features until P01–P03 are completed and reviewed. P01 is an owner pilot; no independent-user validation or unrestricted Alpha-ready claim is made.
 
 ## Implemented
 
-- Responsive German/English UI and mixed-language recipe fields.
-- Recipe editor, photo uploads, yield scaling, filters, favourites, cooked status, cooking events and notes.
-- Editable tags with global rename/merge, custom ingredient aliases, multilingual pantry presence matching.
-- Shopping list with unit-aware aggregation and checkboxes.
-- Photo OCR and plain-text field extraction for German, English and Persian, plus structured JSON draft import; unknown quantities and times stay unknown.
-- Rule-based completeness check. Original JSON imports and up to 30 previous saved versions are retained.
-- Recipe and shopping print layouts (browser Save as PDF).
-- Versioned JSON backup/restore including referenced photos and recipe revisions.
-- Shared server storage and optimistic concurrency, private platform access and per-user authorization.
+- German/English interface and German/English/Persian recipe content; small deterministic ingredient dictionary and personal aliases support cross-language ingredient matching.
+- Optional Cloudflare AI for text and up to four recipe-image pages, with German/English output, explicit data-send consent and review before saving. Field origins and review states persist through revisions and backups.
+- Two AI attempts per authenticated user and UTC day, reserved atomically in SQLite. Provider failures count; no automatic retries or paid fallback. Provider-wide limits remain separate.
+- On-device OCR and deterministic text extraction, plus structured JSON drafts and recipe JSON-LD import from an approved website allowlist.
+- Recipe editor, photo attachments, search/filter, favourites, cooked history, tags and notes; unit-aware scaling, pantry matching and shopping lists.
+- Versioned JSON backup/restore with photos, input/size validation, reference-protected deletion and explicit orphan cleanup.
+- Owner-bound storage, optimistic concurrency, same-origin mutations and content-free diagnostic categories/reference IDs.
 
-Automatic in-app LLM review, web comparison, semantic search, nutrition estimates and styled full cookbook exports are **not implemented**. No paid model integration is configured. Pantry matching checks presence rather than stock quantity. The supported ingredient dictionary is intentionally small.
+Complete recipe translation, semantic search, nutrition estimation and styled full-cookbook exports are not implemented. Known ingredient matching is neither general translation nor a guarantee of ingredient substitutability.
 
 ## Architecture
 
-React + TypeScript UI, Vinext Worker-compatible server, Zod validation, Drizzle schema migrations, Cloudflare D1 structured storage and R2 photo storage. Hosting and sign-in are supplied by Sites. These platform services are dependencies; this repository alone is not a standalone authentication server. There is no promise of unlimited or permanently free hosting.
+React 19, TypeScript, Vinext/Vite Worker runtime, Next-compatible APIs, Zod and Drizzle; Cloudflare D1 notebooks/metadata and R2 photos. Sites supplies hosting and ChatGPT authentication. The repository alone is not a standalone authentication server. See [architecture](docs/architecture.md) and [security](SECURITY.md).
 
-See [architecture](docs/architecture.md), [security](SECURITY.md) and [project status](PROJECT_STATUS.md).
+Optional AI uses a server-side Cloudflare token and confirmed Workers Free configuration. No paid fallback is configured; no promise of permanently free hosting or unlimited provider availability is made. Input/output and personal attempt limits supplement the provider's account-wide limit.
 
-## Development
+## Development and validation
 
-Node.js 22.13+ (for Node's built-in SQLite tests use 22.18+) and the repository's package manager/lockfile are required. Run `npm run install:ci` to install according to the lockfile, `npm run test` for domain/storage tests, and `npm run typecheck` for TypeScript. `npm run build` emits the Worker and its bindings configuration. See the starter scripts for platform-specific local execution.
+CI uses Node 24 and pinned pnpm 11.25.0. The [workflow](.github/workflows/check.yml) installs the lockfile, runs `npm run test`, `npm run typecheck` and `npm run build`. The current suite has 102 tests, including real SQLite owner isolation/parallel quota reservations, parser/error categories and backup rollback/reference protection.
 
-On your Mac, the supplied `.devcontainer/devcontainer.json` defines a project-scoped non-root environment for an editor supporting Dev Containers. This config is supplied for reproducible local setup; it has not been run on the owner's Mac. Never mount your whole home directory or the Docker socket. The current build was produced in the separate managed Linux workspace.
+On an already configured checkout, use those same test/typecheck/build commands. Installation and runtime helpers depend on the Sites environment; an independent clean-clone setup has not yet been verified for public distribution. Do not expose local identity emulation beyond loopback or turn it into a production authentication bypass. Keep `.env`, runtime state, backups and private pilot observations out of Git.
 
-Hosted authentication depends on dispatcher-provided identity. Direct local execution has no real login dispatcher: API routes fail closed without identity. Any local identity emulation must be isolated to a localhost test environment and must not become a production bypass.
+Automated checks are distinct from device/live verification. The authenticated live text flow passed import → explicit review/edit → save → reload → search. The owner also confirmed mobile UI and an AI image import on a real smartphone. Two real live-account isolation checks and the updated actual provider-usage reading remain open. See [project status](PROJECT_STATUS.md).
 
-To apply a generated migration to an isolated local D1 after build, use the documented Wrangler local migration command with `dist/server/wrangler.json`; never apply preview data to production. Publishing applies immutable schema migrations through Sites.
+## Data and recovery
 
-## Backup and recovery
+Notebook writes are limited to 1 MiB; schema allows up to 500 recipes, but large recipes/revisions may reach the byte limit earlier. Up to 600 photo records per owner, 2 MiB per uploaded photo. Backup export/import share validation: compact JSON up to 20 MiB, with an additional 14 MiB raw-photo export limit. Restore uploads fresh owner-bound photo IDs before replacing state and protects the existing notebook on failure.
 
-Data & backup → Full backup downloads schemaVersion 1 JSON with all state and referenced images. Current limits: 500 recipes, 300 pantry entries, 600 uploaded photo records, 1 MB notebook state, 2 MB per compressed uploaded photo, 14 MB of photos per backup and 20 MB restore file. Restore validates structure and uploads photos under new owner-bound IDs before replacing state. It replaces the current notebook after confirmation. A failed restore does not overwrite the old notebook; uploaded but unused photos may remain and count toward the quota.
+Referenced photos, including revisions, are protected from deletion. Explicit cleanup removes older unreferenced uploads with a 24-hour grace period; there is no automatic cleanup scheduler. Temporary restore capacity can cause a safe refusal near the photo quota. Backups are unencrypted and must stay private.
 
-No automated garbage collection exists yet. Deleted recipes' unreferenced photos can remain in private storage; backup only includes photos referenced by current recipes/revisions. Backup is not encrypted: keep files private. To recover, select Restore backup and review the confirmation. Reload a second device before editing; stale writes are rejected rather than overwriting newer data.
+## Security, licensing and portfolio status
 
-## Tests and limitations
+The 2026-10-19 production dependency audit reports 3 high, 4 moderate and 1 low finding; this is **not** a security-certified release. See the scoped [public/CV readiness check](docs/public-cv-readiness.md) for findings, evidence limits and publication prerequisites.
 
-Tests cover import validation, Persian normalization and aliases, unit-compatible aggregation, optional ingredients, backup state round-trip, same-origin mutation policy, real SQLite owner isolation, photo metadata ownership and version conflicts. They do not constitute a penetration test. Browser/device, full photo backup UI and live sign-in testing require a permitted browser/session; see PROJECT_STATUS.md for what was actually executed.
-
-The demo recipes and generated cookie image are examples, not the owner's tested recipe history. Do not publish private recipes or account data in a portfolio. Repository licensing and public publication have not been selected by the owner.
-
-## Photo and text import
-
-Open New recipe or Import → Fill from photo or text. Select the original language. Read a photo of a written recipe (JPEG/PNG/WebP, 10 MB maximum) or paste text; correct the recognized text, then select Fill recipe fields. Existing drafts require explicit replacement consent. Nothing is saved until the editor's Save action. Dish photos without written instructions cannot produce a recipe. Clear, single-column typed recipes with ingredient and method headings work best; handwriting and complex layouts may fail.
-
-Tesseract.js 6 performs OCR entirely on the device. Worker, WASM and eng/deu/fas language files are generated from pinned dependencies by scripts/prepare-ocr.mjs and served from the same origin, with no third-party OCR upload or model key. The recognized text becomes retained recipe source text; the input photo is not uploaded or kept by the extraction flow. Regular recipe photo attachment remains a separate action. Language models and web comparison remain deferred. A conservative deterministic parser extracts quantities, units, explicit timings, yield, ingredients and steps; it does not reason about recipes or infer missing metadata. Unrecognized fields remain editable.
-
-Verification: 13 automated tests, TypeScript, production build and an actual synthetic English recipe image recognized with the bundled OCR engine passed. Browser worker loading and mobile/Persian photo accuracy still require first-use verification. Production dependency audit reports no known vulnerabilities.
+The repository remains private. A project license has not been selected; preserve included third-party notices. Demo recipes and the generated cookie image are examples. Do not publish personal recipes, backups, participant data or private screenshots. Public release requires an explicit decision and a fresh secret/history, dependency, license and clean-clone review.

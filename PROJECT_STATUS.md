@@ -1,48 +1,39 @@
-# Project status
+# Project status – 19 October 2026
 
-## Cloudflare AI preparation
+## Alpha scope
 
-Added a default-disabled Cloudflare Workers AI endpoint, up to four image pages combined in user-controlled order, output DE/EN, explicit data-send consent, optional time estimates, preview/apply/discard, and fill-missing-only merging. Origins and independent review states persist in recipes, revisions and backups. Existing manual imports clear old AI marks. Known webpage totalTime is now imported and can be edited separately. Added atomic shared daily cap (5 requests, failed requests count), provider/input/output bounds, no retries or paid fallback. Connection requires server secrets, confirmed free account and owner-accepted model license. No account exists yet, so real provider and image quality verification remain blocked. Tests use synthetic provider output and must not be described as real AI quality tests. Origins for ingredients and steps apply to whole groups in this first slice; individual ingredient/step markings remain future work.
+Milestone: **Import → Review → Save → Find again**. PR #5 was merged into the safety branch; PR #4 then integrated the combined changes into main. Feature baseline is tagged `alpha-freeze-2026-10-19`; see [freeze rules](docs/alpha-freeze.md). No feature work until P01–P03 are completed and reviewed.
 
-## October 1 website import update
+P01 is the owner, confirmed by the user. Pilot preparation is complete; the first real moderated session and subsequent 5–7-day observation are pending. Sessions start with two available personal AI attempts. No automated Alpha analytics has been deployed; the separately prepared measurement patch is not integrated. Actual observations remain outside this Git checkout.
 
-Added authenticated public recipe-link import for a visible allowlist of 20 recipe publishers. Every redirect must remain on the exact approved root/www hosts over HTTPS. JSON-LD Recipe arrays/graphs and nested instruction sections are supported. Multiple recipes are offered individually; selected data opens in the existing editable draft with explicit replacement consent. Source URL and original structured data are preserved. Missing times remain unknown; no AI service or paid fallback is connected. Unsupported sites, blocked fetches and missing structured data show a text/photo fallback message. Language is preserved, not translated.
+## Current implementation
 
-Verification: 17 domain/security/storage/import tests passed. A real BBC Good Food Easy pancakes fetch returned 6 ingredients, 5 steps, 10-minute prep and 20-minute cooking. Full device/browser and second-device checks remain for the owner; automated tests cannot establish that all real-world features work. Multi-image OCR and per-field AI provenance remain planned and are not part of this release.
+React/TypeScript recipe library, editor, photos, search, tags, revisions, pantry and shopping utilities; deterministic DE/EN/FA text/ingredient handling, on-device OCR, approved-site JSON-LD import, optional Cloudflare text/image AI with DE/EN output, explicit consent/review and persisted AI provenance. Personal two-attempt UTC-day quota, bounded provider decoding and safe failure categories, validated photo backup/restore and protected photo cleanup are implemented.
 
-## Decisions
+No complete recipe translation, LLM/vector search, billing infrastructure or new provider. Persian image accuracy is not an Alpha blocker. AI remains optional for library use.
 
-- Product name My Cookbook; German Mein Kochbuch.
-- Shared phone/laptop storage required, UI German/English; content supports Persian.
-- No paid model runtime or AI subscription dependency.
-- Private deployment; owner identity enforced in API and storage queries.
-- Implementation built with Codex assistance. Product/recipe decisions remain with the owner.
+## Verified evidence
 
-## Completed implementation
+- 102 tests, TypeScript and Worker build passed. Combined PR #4/#5 CI passed before merge.
+- Authenticated live text-only AI import, explicit review/edit/save, reload/search/open passed on 19 October; quantities/ranges and review marks persisted. Test was in the in-app browser.
+- Owner confirmed real-smartphone login, navigation, search, opening/editing/saving, reload, keyboard/scrolling and an English AI image import. Library remains usable when personal AI quota is exhausted.
+- Full local photo-backup restore passed with byte integrity and protected-reference deletion tests. This does not prove production restore on a separate real account.
+- Deterministic ingredient aliases already match milk/Milch/شیر. Controlled live provider comparison accepted both string content and a text-part array; no general request-format defect demonstrated.
 
-Recipe library/editor, photos, search/filter, tags, favourites, cooked status/history, notes, revisions, yield scaling, pantry presence matching, custom aliases, multi-recipe checkable shopping list, structured draft import, rule-based warnings, print layouts and JSON photo backups. README, threat model, architecture decisions, tests, CI config and a non-root Mac development container configuration are included.
+## Open gates and risks
 
-## Verification so far
+Two actual live accounts for isolation, actual updated Cloudflare Neuron reserve, and a fresh physical iPhone text retest remain unverified. A feature freeze is not an Alpha-ready or public-release approval.
 
-- 13 automated domain/security/storage tests passed, including real SQLite cross-user isolation and version conflict tests.
-- TypeScript and initial production build passed. Dependency patches and TypeScript checks are complete; the final build runs as part of publishing.
-- Starter dependency advisories were patched (Next.js 16.3.6 plus scoped transitive overrides). Final production dependency audit: {'info': 0, 'low': 0, 'moderate': 0, 'high': 0, 'critical': 0}. The critical Next.js finding concerned next/og ImageResponse, which this app does not use.
-- Supervised preview reported running but HTTP requests could not reach it; no HTTP integration or browser checks are claimed.
-- No permitted browser-control skill is available in this environment; interactive browser and WebMCP runtime validation are unavailable. WebMCP registration is feature-detected and optional.
-- The Mac Dev Container configuration is supplied, not executed on the owner's device.
+Production dependency audit now reports **3 high, 4 moderate, 1 low, 0 critical**; prior zero-advisory statements were historical snapshots. High findings include Next image optimization, sharp/librsvg and source-map-js. Exposure/patch verification remains open; no unaffected claim is made. Repository stays private, no new test-account access granted.
 
-## Remaining first-use checks
+Root license and independent clean-clone setup are pending. Public/CV findings and an honest CV description are in [readiness](docs/public-cv-readiness.md). Codex assistance is disclosed. No large user base, completed penetration test or validated product demand is claimed.
 
-Open the private app in a real user session; create/edit/reload a recipe, upload a photo, verify print layout, export/restore a photo-containing backup and open on a second device with the same account. Do this with synthetic data first.
+## Reference documents
 
-## Deferred
+- [Alpha safety checks](docs/alpha-safety-checks.md)
+- [Live text/image comparison](docs/ai-text-image-comparison-2026-10-19.md)
+- [AI error diagnosis](docs/ai-text-diagnosis-2026-10-05.md)
+- [Provider usage and measurement limits](docs/alpha-ai-usage.md)
+- [P01 protocol](docs/pilot-p01.md)
 
-LLM-powered extraction, live LLM suggestions/web comparison, semantic search, nutrition, collections, styled multi-recipe cookbook PDF, image garbage collection and provider-independent deployment auth. These are not represented as implemented features.
-
-## Next milestone
-
-Owner tries the first-use checklist; fix concrete issues. Then choose whether to automate extraction with a real model provider or expand cookbook PDF/collections. Avoid a paid integration until a cost/access decision is made.
-
-## October 1 import update
-
-Implemented local photo OCR and deterministic plain-text extraction in the editor, with explicit replacement consent, preserved source text and review warnings. Self-hosted worker/WASM/language assets avoid third-party photo processing. Tests cover German, English, Persian digits, fractions, unknown quantities, ranges and input limits. Actual synthetic English image recognition passed; browser/mobile OCR has not been verified here.
+Earlier implementation details remain in Git history. This file describes the current state rather than repeating outdated initial-release claims.
