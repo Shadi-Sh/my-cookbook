@@ -1,45 +1,98 @@
 # My Cookbook · Mein Kochbuch
 
-A private recipe notebook for collecting recipes from text, images and supported websites, reviewing the extracted draft, saving it and finding it again. Built with Codex assistance from the owner's requirements and technical decisions.
+**A private recipe notebook — from scattered sources to a collection you can find and cook from.**
 
-**Alpha feature freeze:** [baseline and limits](docs/alpha-freeze.md). No new features until P01–P03 are completed and reviewed. P01 is an owner pilot; no independent-user validation or unrestricted Alpha-ready claim is made.
+Collect recipes from text, photos and supported websites, review an editable draft, then save it to your own library. My Cookbook combines everyday recipe tools with optional AI-assisted extraction.
 
-## Implemented
+[Features](#features) · [Alpha status](#alpha-status) · [Technical overview](#technical-overview) · [Development](#development) · [Documentation](#documentation)
 
-- German/English interface and German/English/Persian recipe content; small deterministic ingredient dictionary and personal aliases support cross-language ingredient matching.
-- Optional Cloudflare AI for text and up to four recipe-image pages, with German/English output, explicit data-send consent and review before saving. Field origins and review states persist through revisions and backups.
-- Two AI attempts per authenticated user and UTC day, reserved atomically in SQLite. Provider failures count; no automatic retries or paid fallback. Provider-wide limits remain separate.
-- On-device OCR and deterministic text extraction, plus structured JSON drafts and recipe JSON-LD import from an approved website allowlist.
-- Recipe editor, photo attachments, search/filter, favourites, cooked history, tags and notes; unit-aware scaling, pantry matching and shopping lists.
-- Versioned JSON backup/restore with photos, input/size validation, reference-protected deletion and explicit orphan cleanup.
-- Owner-bound storage, optimistic concurrency, same-origin mutations and content-free diagnostic categories/reference IDs.
+> **Private Alpha · Feature freeze**  
+> The current focus is validating **Import → Review → Save → Find again**. P01 is the owner pilot and is documented as not yet started; independent-user validation is still pending.
 
-Complete recipe translation, semantic search, nutrition estimation and styled full-cookbook exports are not implemented. Known ingredient matching is neither general translation nor a guarantee of ingredient substitutability.
+## How it works
 
-## Architecture
+1. **Import** — paste recipe text, use on-device OCR, import Recipe JSON-LD from an approved website, or choose optional Cloudflare AI for text and images.
+2. **Review** — compare the draft with its source and correct ingredients, amounts and steps. AI field origins and review states remain visible.
+3. **Save** — keep the recipe, source, notes and optional photos in your private library.
+4. **Find and cook** — search or filter your collection, scale portions, check pantry ingredients and build a shopping list.
 
-React 19, TypeScript, Vinext/Vite Worker runtime, Next-compatible APIs, Zod and Drizzle; Cloudflare D1 notebooks/metadata and R2 photos. Sites supplies hosting and ChatGPT authentication. The repository alone is not a standalone authentication server. See [architecture](docs/architecture.md) and [security](SECURITY.md).
+The library and manual editing remain usable when the AI quota is exhausted.
 
-Optional AI uses a server-side Cloudflare token and confirmed Workers Free configuration. No paid fallback is configured; no promise of permanently free hosting or unlimited provider availability is made. Input/output and personal attempt limits supplement the provider's account-wide limit.
+## Features
 
-## Development and validation
+| Area | Implemented |
+| --- | --- |
+| Recipe library | Editor, photo attachments, search and filters, favourites, tags, notes, cooked history and revisions |
+| Import | Deterministic text extraction, on-device OCR, structured JSON drafts and Recipe JSON-LD from an approved website allowlist |
+| Optional AI | Text and up to four recipe-image pages; German or English output, explicit consent before sending, and review before saving |
+| Languages | German/English interface; German/English/Persian recipe content; limited ingredient dictionary and personal aliases for cross-language matching |
+| Cooking tools | Unit-aware portion scaling, pantry matching and shopping lists |
+| Recovery | Versioned JSON backup/restore with photos, validation, reference-protected photo deletion and explicit orphan cleanup |
 
-CI uses Node 24 and pinned pnpm 11.25.0. The [workflow](.github/workflows/check.yml) installs the lockfile, runs `npm run test`, `npm run typecheck` and `npm run build`. The current suite has 105 tests, including real SQLite owner isolation/parallel quota reservations, parser/error categories and backup rollback/reference protection.
+Complete recipe translation, semantic search, nutrition estimation and styled full-cookbook exports are not implemented. Ingredient matching uses known terms and aliases; it does not establish ingredient substitutability.
 
-On an already configured checkout, use those same test/typecheck/build commands. Installation and runtime helpers depend on the Sites environment; an independent clean-clone setup has not yet been verified for public distribution. Do not expose local identity emulation beyond loopback or turn it into a production authentication bypass. Keep `.env`, runtime state, backups and private pilot observations out of Git.
+## Alpha status
 
-Automated checks are distinct from device/live verification. The authenticated live text flow passed import → explicit review/edit → save → reload → search. The owner also confirmed mobile UI and an AI image import on a real smartphone. Two real live-account isolation checks and the updated actual provider-usage reading remain open. See [project status](PROJECT_STATUS.md).
+The accepted feature baseline is tagged `alpha-freeze-2026-10-20-owner-ai`. No new product features are planned until P01–P03 are completed and reviewed. P01 is the owner, so its results will not count as independent validation.
 
-## Data and recovery
+- **Verified:** the documented baseline passed 105 automated tests, TypeScript checks and the Worker build. Authenticated live text and image AI flows passed draft → review → save → reload → find again.
+- **Mobile evidence:** the owner confirmed smartphone use and an English AI image import. A fresh physical iPhone text retest remains open.
+- **Open gates:** isolation between two actual live accounts and dependency security triage remain unresolved. Synthetic acceptance tests do not count as pilot usage or product demand.
 
-Notebook writes are limited to 1 MiB; schema allows up to 500 recipes, but large recipes/revisions may reach the byte limit earlier. Up to 600 photo records per owner, 2 MiB per uploaded photo. Backup export/import share validation: compact JSON up to 20 MiB, with an additional 14 MiB raw-photo export limit. Restore uploads fresh owner-bound photo IDs before replacing state and protects the existing notebook on failure.
+**AI allowance:** the configured owner receives **20 attempts per UTC day**; other accounts receive **2**. Provider failures count, with no automatic retries or paid fallback. Cloudflare Free remains the configured plan; its shared provider limits are separate from personal app quotas.
 
-Referenced photos, including revisions, are protected from deletion. Explicit cleanup removes older unreferenced uploads with a 24-hour grace period; there is no automatic cleanup scheduler. Temporary restore capacity can cause a safe refusal near the photo quota. Backups are unencrypted and must stay private.
+See [project status](PROJECT_STATUS.md), [freeze rules](docs/alpha-freeze.md) and the [owner quota decision and acceptance record](docs/ai-usage-freeze-exception.md).
 
-## Security, licensing and portfolio status
+## Technical overview
 
-The 2026-10-19 production dependency audit reports 3 high, 4 moderate and 1 low finding; this is **not** a security-certified release. See the scoped [public/CV readiness check](docs/public-cv-readiness.md) for findings, evidence limits and publication prerequisites.
+| Layer | Technology and role |
+| --- | --- |
+| Interface | React 19, TypeScript and Tailwind CSS |
+| Runtime | Vinext/Vite on Cloudflare Workers, with Next-compatible APIs |
+| Validation and schema | Zod and Drizzle |
+| Storage | Cloudflare D1 for versioned owner notebooks and metadata; R2 for private photos |
+| Extraction | Tesseract.js in the browser; optional server-side Cloudflare Workers AI |
+| Hosting and sign-in | Sites hosting and ChatGPT authentication |
+| CI | GitHub Actions: tests, type checking and build |
 
-The repository remains private. A project license has not been selected; preserve included third-party notices. Demo recipes and the generated cookie image are examples. Do not publish personal recipes, backups, participant data or private screenshots. Public release requires an explicit decision and a fresh secret/history, dependency, license and clean-clone review.
+One versioned JSON notebook per owner keeps storage simple; document size and account-wide edit conflicts are explicit tradeoffs.
 
-Owner usage freeze exception: [decision, cost comparison and rollback](docs/ai-usage-freeze-exception.md). Configured Owner: 20 AI attempts/UTC day; other accounts: 2. Cloudflare Free remains unchanged.
+Controls include owner-bound storage, optimistic concurrency, same-origin mutations and input validation. AI credentials stay server-side; diagnostics exclude recipe content. Sign-in depends on Sites, not a standalone authentication server in this repository.
+
+Built with Codex assistance from the owner's requirements and technical decisions.
+
+## Development
+
+CI uses **Node 24** and **pnpm 11.25.0** with the committed lockfile. On an already configured checkout, run the same checks:
+
+```sh
+npm run test
+npm run typecheck
+npm run build
+```
+
+Installation and runtime helpers depend on the Sites environment. An independent clean-clone setup has not yet been verified for public distribution. Keep local identity emulation restricted to loopback, and keep credentials, runtime state, backups and private pilot observations out of Git.
+
+The [CI workflow](.github/workflows/check.yml) covers the automated checks. These do not replace live account, device or recovery verification.
+
+## Data, security and publication
+
+Notebook writes are limited to **1 MiB** (up to 500 recipes in the schema); photos to **600 per owner / 2 MiB each**. Backups support compact JSON up to **20 MiB**, with a **14 MiB raw-photo export limit**. Restore protects existing state on failure and may refuse near the photo quota. Referenced photos are protected; explicit orphan cleanup has a 24-hour grace period. **Backups are unencrypted and must stay private.**
+
+The dependency audit recorded on **19 October 2026** reports **3 high, 4 moderate and 1 low finding**; exposure and patch verification remain open. This is not a security-certified release.
+
+The repository remains private and has no selected project license. Public release requires a fresh secret/history review, dependency and license checks, and verified clean-clone setup. Preserve third-party notices; do not publish personal recipes, backups, participant data or private screenshots.
+
+## Documentation
+
+| Document | Purpose |
+| --- | --- |
+| [Project status](PROJECT_STATUS.md) | Current implementation, verified evidence and open gates |
+| [Architecture](docs/architecture.md) | Data flow, design decisions and tradeoffs |
+| [Alpha freeze](docs/alpha-freeze.md) | Accepted scope and pilot boundaries |
+| [P01 protocol](docs/pilot-p01.md) | Owner pilot session and 5–7-day observation |
+| [AI quota decision](docs/ai-usage-freeze-exception.md) | Owner allowance, provider comparison and rollback |
+| [Security model](SECURITY.md) | Trust boundaries and implemented controls |
+| [Public/portfolio readiness](docs/public-cv-readiness.md) | Security findings and publication prerequisites |
+
+Detailed documents include older snapshots; the project status and owner quota acceptance record provide the latest Alpha context.
