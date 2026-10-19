@@ -40,4 +40,4 @@ Earlier implementation details remain in Git history. This file describes the cu
 
 ## Owner AI freeze exception
 
-P01 has not started; hold until renewed text/image live acceptance and new freeze. Keep Cloudflare Free; configured Owner 20 attempts/UTC day, other accounts 2. No provider switch or paid plan. [Comparison and acceptance record](docs/ai-usage-freeze-exception.md).
+P01 has not started. Renewed full text/image live acceptance passed; start only after setting the new freeze `alpha-freeze-2026-10-20-owner-ai`. Keep Cloudflare Free; configured Owner 20 attempts/UTC day, other accounts 2. No provider switch or paid plan. [Comparison and acceptance record](docs/ai-usage-freeze-exception.md).

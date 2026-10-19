@@ -1,6 +1,6 @@
 # Freeze exception: Owner AI usage
 
-Status: implementation prepared; deployment and renewed live acceptance pending. P01 has not begun and remains on hold until the renewed freeze.
+Status: implemented and published; renewed live text and image acceptance passed. P01 has not begun; release it only after the new freeze tag is set.
 
 ## Decision and comparison (19 October 2026)
 
@@ -46,3 +46,18 @@ Operational rollback: remove `AI_OWNER_EMAIL` in Sites, deploy the same saved so
 - [GPT-4.1 mini modalities, pricing and Structured Outputs](https://developers.openai.com/api/docs/models/gpt-4.1-mini)
 - [OpenAI data controls](https://developers.openai.com/api/docs/guides/your-data)
 - [OpenAI rate limits](https://developers.openai.com/api/docs/guides/rate-limits)
+
+## Renewed acceptance (19 October UTC / 20 October Europe/Berlin)
+
+- Published version 12, source `00ecdec0ca48bb4cc80c26a8a34987a85f036122`, environment revision 4; deployment succeeded without changing the audience.
+- Actual Owner UI: **19/20** after increase, preserving the one attempt already spent; **18/20** after text and **17/20** after image. No quota reset/refund or direct-provider bypass.
+- Text-only: synthetic English five-ingredient recipe → German structured draft → explicit apply/review → rename `Alpha Owner Text 2026-10-19` → save → reload → search/open. All five quantities/units and three steps retained, including 8–10 leaves and 2–3 sprigs.
+- Image-only: existing synthetic English PNG, empty text field → actual Cloudflare draft (not local OCR) → explicit apply/review → rename `Alpha Owner Bild 2026-10-19` → save → reload → search/open. Three ingredients, two steps, 200 g, 8–10 leaves, 2–3 sprigs retained. Persisted AI provenance expanded and inspected; model marks remain visible. Specified source times were conservatively labelled as estimates by the existing implementation; no provenance-policy change was made in this exception.
+- Both synthetic records remain available for inspection; neither counts as P01 demand/return. The image is an extraction input, not automatically a saved recipe photo; no photo-storage change was made.
+- 105 tests, TypeScript and Worker build passed locally and in [CI](https://github.com/Shadi-Sh/my-cookbook/actions/runs/39331612327). Real concurrent SQLite connections passed for both limits.
+- Screenshots are stored outside Git under `alpha-gate-evidence/owner-{text,image}-live-2026-10-19.png`. Physical iPhone repetition is not claimed.
+
+New freeze identifier: `alpha-freeze-2026-10-20-owner-ai`, to be created at the reviewed accepted commit. Original freeze tag remains unchanged. Existing live two-account isolation and dependency-audit restrictions remain in force; this is no public-release or unrestricted Alpha-ready approval.
+
+
+Post-acceptance dashboard observation at approximately 22:01 UTC: the **Last 24 hours** Gemma chart advanced from 80.75 through 108.86 to **131.46 neurons**, while the daily headline still displayed 80.75. Observed chart delta: **50.71 neurons** for the acceptance interval; not an individually isolated request measurement. Using the larger displayed 24-hour value for planning gives **9,868.54 neurons (~98.69%)** below 10,000. This is a conservative comparison of the displayed rolling window with the daily allowance, not a claim of synchronized final UTC-day billing statistics. Dashboard aggregation delay remains an operational limitation; monitor real Owner use, keep Free, no automatic paid fallback. The observed values do not indicate a capacity problem for 20 comparable imports.

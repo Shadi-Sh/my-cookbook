@@ -1,4 +1,4 @@
-> Aktuelle Founder-Ausnahme: [Owner-KI-Nutzung](ai-usage-freeze-exception.md). P01 hat noch nicht begonnen und bleibt bis zur erneuten Text-/Bild-Liveabnahme und einem neuen Freeze angehalten. Der unten genannte ursprüngliche Freeze-Tag bleibt unverändert.
+> Abgenommene Founder-Ausnahme: [Owner-KI-Nutzung](ai-usage-freeze-exception.md). Text- und Bild-Liveabnahme bestanden, 105 Tests/TypeScript/Build und CI erfolgreich. Neuer Freeze: `alpha-freeze-2026-10-20-owner-ai` am reviewten Endstand. P01 hat noch nicht begonnen; Start erst nach Setzen dieses Tags. Der unten genannte ursprüngliche Freeze-Tag bleibt unverändert.
 
 # Alpha Feature Freeze – 19. Oktober 2026
 
@@ -19,7 +19,7 @@ Dies ist ein **Feature-Freeze**, keine Behauptung „Alpha-ready“, Sicherheits
 
 Owner ist als P01 bestätigt. P01 hat noch nicht begonnen; erste echte moderierte Importsession steht noch aus. Anleitung: [P01](pilot-p01.md). Tatsächliche Beobachtungen bleiben im privaten lokalen Projektverzeichnis `pilot-data/P01`, außerhalb dieses Git-Checkouts. Keine neuen Analytics; der separate Metrikpatch ist nicht integriert und wird nicht als aktiv bezeichnet.
 
-Die 5–7-tägige Beobachtungsphase beginnt mit der ersten echten Session. Synthetische Entwickler- und Abnahmetests zählen nicht als freiwillige Nutzung oder Nachfrage. KI-Session erst mit zwei verfügbaren persönlichen Versuchen starten; nach dem heutigen Nachweistest war einer verfügbar. Nächster Reset 20.10. um 00:00 UTC / 02:00 Europe/Berlin.
+Die 5–7-tägige Beobachtungsphase beginnt mit der ersten echten Session. Synthetische Entwickler- und Abnahmetests zählen nicht als freiwillige Nutzung oder Nachfrage. KI-Session mit mindestens zwei verfügbaren persönlichen Versuchen starten. Nach erneuter Abnahme: 17/20 beim konfigurierten Owner, andere Nutzer weiterhin 2/Tag. Reset täglich 00:00 UTC.
 
 ## Offene Freigabegrenzen
 
