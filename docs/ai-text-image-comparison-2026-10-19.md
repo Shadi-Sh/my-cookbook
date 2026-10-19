@@ -23,10 +23,17 @@ Beide Antworten waren gültiges JSON und wurden durch die aktuelle strenge Rezep
 
 Ergebnis: Ein genereller Defekt des String-content-Formats ist durch diesen Vergleich nicht belegt. Eine zusätzliche Laufzeitänderung allein aufgrund der unterschiedlichen Darstellung wäre spekulativ. Der vorangegangene konkrete yield:null-Fehler bleibt reproduziert und behoben; siehe ai-text-diagnosis-2026-10-05.md.
 
-## Vollständiger Live-Seitentest
+## Vollständiger Live-Seitentest: bestanden am 19. Oktober 2026
 
-Die unterstützte Browsersteuerung ist wieder erreichbar. Beim vorhandenen Cookbook-Tab war die Sitzung jedoch abgelaufen. „Continue with ChatGPT“ führt zur normalen Anmeldemaske; Nutzer wurde um eigene Anmeldung gebeten. Noch kein authentifizierter Textimport über POST /api/recipe-ai, Review oder Speichern in dieser Sitzung nachgewiesen. Direkte Live-Providererfolge dürfen nicht als iPhone-/Site-End-to-End-Nachweis ausgegeben werden.
+Nach eigener Anmeldung des Nutzers wurde der komplette Text-only-Flow über die authentifizierte produktive Site geprüft, nicht nur per direktem Provideraufruf:
 
-Nach Anmeldung: synthetischen Text eingeben, Consent ausdrücklich setzen, einen persönlichen Versuch nutzen, gültige Vorschläge prüfen, Titel/Notiz bearbeiten, bewusst speichern und nach Reload wiederfinden. Bei Fehler feste Fehlerkategorie und Referenz erfassen; Inhalte/Secrets bleiben außerhalb von Logs. Kein neuer Funktionsumfang.
+1. Neues Rezept, ausschließlich synthetischen englischen Rezepttext in „Rezepttext für KI“ eingegeben, kein Bild ausgewählt. Consent gesetzt. Persönliches Kontingent vor Aufruf 2/2.
+2. „KI-Entwurf erstellen“ erfolgreich: Vorschläge für fünf Zutaten, drei Schritte und markierte Zeitschätzungen. Kontingent danach 1/2. Sammlung zu diesem Zeitpunkt unverändert bei acht Rezepten; Editorfelder blieben bis zur ausdrücklichen Übernahme leer.
+3. „In den Entwurf übernehmen und prüfen“: 200 g Pasta, 100 ml Sahne, 2 Zehen Knoblauch, 8–10 Blätter Basilikum und 2–3 Zweige Thymian oder Oregano gegen die Quelle geprüft. Drei Schritte stimmen mit der Quelle überein.
+4. Titel auf `Alpha Text-AI Live 2026-10-19` geändert, synthetische Prüfnotiz ergänzt. Zutaten und Schritte als geprüft markiert; Zeiten als ungeprüfte KI-Schätzungen bewusst „So übernommen“. Vorgabe von zwei Testportionen manuell belassen; keine aus der Quelle belegte Portionszahl behauptet.
+5. „Rezept speichern“ ausdrücklich geklickt. Nach erfolgreicher Detailansicht Seite neu geladen, Rezept über den vollständigen Testtitel gesucht und geöffnet.
+6. Titel, Notiz, fünf Zutaten, drei Schritte, Mengenbereiche und alle sechs Herkunfts-/Prüfmarkierungen nach Reload vorhanden. Der synthetische Datensatz bleibt zur Sichtprüfung gespeichert; keine bestehenden Nutzerrezepte geändert oder gelöscht.
 
-Bestehende 102 automatisierte Tests am 19.10. erneut bestanden. Kein produktiver Code geändert und kein erneutes Website-Deployment für diese Dokumentationskorrektur erforderlich.
+Screenshot lokal unter `alpha-gate-evidence/text-ai-live-2026-10-19.png` im Projekt-Arbeitsbereich gesichert. Nachweis gilt für den angemeldeten In-app-Browser; kein neuer physischer iPhone/Safari-Test behauptet. Mobiler AI-Bildpfad bleibt durch Nutzerbericht live bestätigt. Die ursprünglichen fehlgeschlagenen Textrequests sind mangels identischer Quelle/zugehöriger Diagnostik weiterhin nicht einzeln retrospektiv zugeordnet; ein genereller Defekt des aktuellen Text-only-Pfads ist nicht reproduziert.
+
+Bestehende 102 automatisierte Tests am 19.10. erneut bestanden. Kein produktiver Code geändert und kein erneutes Website-Deployment für diese Dokumentationskorrektur erforderlich. Keine neuen Features, Formatumstellung, Quota-Rücksetzung oder zusätzlichen externen Dienste.

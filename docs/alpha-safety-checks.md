@@ -89,3 +89,7 @@ Smartphone-Kernflow bis auf KI-Bildimport vom Nutzer als bestanden gemeldet. Ger
 ## Text-KI-Fehler vom 5. Oktober 2026
 
 Live reproduziert: Gemma kann bei fehlender Portionsangabe yield:null liefern; der strenge Parser lehnte dann den gesamten Entwurf ab. Minimalfix lässt diesen unbekannten optionalen Wert weg. Sichere Fehlerkategorien trennen Timeout, Provider-Antwort, generiertes JSON und Schema; keine Rezeptinhalte/Secrets in Logs. 102 Tests, TypeScript, Build und direkte Live-Verarbeitung erfolgreich; privat veröffentlicht. Die konkrete alte Nutzerreferenz ist nicht rückwirkend zugeordnet. iPhone-End-to-End-Wiederholung mit verfügbarem Kontingent bleibt offen. Details: ai-text-diagnosis-2026-10-05.md.
+
+## Live-Text-only-Abnahme: 19. Oktober 2026
+
+Nach Nutzeranmeldung vollständiger produktiver Textimport im In-app-Browser bestanden: ausschließlich englischer Text, Cloudflare-AI-Entwurf auf Deutsch, ausdrücklich übernehmen/reviewen, Titel/Notiz ändern, bewusst speichern, Reload, Suche, Öffnen. Fünf Zutaten, drei Schritte, 8–10 Blätter und 2–3 Zweige sowie Herkunfts-/Prüfmarkierungen erhalten. Genau ein Versuch verbraucht (2/2 → 1/2). Synthetisches Rezept `Alpha Text-AI Live 2026-10-19` zur Sichtprüfung gespeichert. Der frühere Login-Blocker für diesen Nachweis ist aufgehoben; physischer iPhone/Safari-Texttest wird nicht zusätzlich behauptet. Details in ai-text-image-comparison-2026-10-19.md. Keine neue Laufzeitänderung.
