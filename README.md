@@ -24,7 +24,7 @@ Optional AI uses a server-side Cloudflare token and confirmed Workers Free confi
 
 ## Development and validation
 
-CI uses Node 24 and pinned pnpm 11.25.0. The [workflow](.github/workflows/check.yml) installs the lockfile, runs `npm run test`, `npm run typecheck` and `npm run build`. The current suite has 102 tests, including real SQLite owner isolation/parallel quota reservations, parser/error categories and backup rollback/reference protection.
+CI uses Node 24 and pinned pnpm 11.25.0. The [workflow](.github/workflows/check.yml) installs the lockfile, runs `npm run test`, `npm run typecheck` and `npm run build`. The current suite has 105 tests, including real SQLite owner isolation/parallel quota reservations, parser/error categories and backup rollback/reference protection.
 
 On an already configured checkout, use those same test/typecheck/build commands. Installation and runtime helpers depend on the Sites environment; an independent clean-clone setup has not yet been verified for public distribution. Do not expose local identity emulation beyond loopback or turn it into a production authentication bypass. Keep `.env`, runtime state, backups and private pilot observations out of Git.
 
@@ -41,3 +41,5 @@ Referenced photos, including revisions, are protected from deletion. Explicit cl
 The 2026-10-19 production dependency audit reports 3 high, 4 moderate and 1 low finding; this is **not** a security-certified release. See the scoped [public/CV readiness check](docs/public-cv-readiness.md) for findings, evidence limits and publication prerequisites.
 
 The repository remains private. A project license has not been selected; preserve included third-party notices. Demo recipes and the generated cookie image are examples. Do not publish personal recipes, backups, participant data or private screenshots. Public release requires an explicit decision and a fresh secret/history, dependency, license and clean-clone review.
+
+Owner usage freeze exception: [decision, cost comparison and rollback](docs/ai-usage-freeze-exception.md). Configured Owner: 20 AI attempts/UTC day; other accounts: 2. Cloudflare Free remains unchanged.

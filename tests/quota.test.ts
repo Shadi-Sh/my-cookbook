@@ -5,7 +5,7 @@ import {readFileSync,mkdtempSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {Worker} from 'node:worker_threads';
-import {quotaStatus,readAIQuota,reserveAIQuota} from '../lib/ai-quota.ts';
+import {personalAILimit,quotaStatus,readAIQuota,reserveAIQuota} from '../lib/ai-quota.ts';
 
 const migration = readFileSync(new URL('../drizzle/0003_empty_zaran.sql', import.meta.url), 'utf8');
 function adapter(sql: DatabaseSync) {
@@ -60,27 +60,53 @@ test('Overlapping reservations through production helper accept exactly two per 
   } finally {sql.close();}
 });
 
-test('Parallel SQLite connections cannot oversubscribe the atomic production SQL',async()=>{
+for (const limit of [2,20]) test(`Parallel SQLite connections cannot oversubscribe ${limit} attempts per owner`,async()=>{
   const dir=mkdtempSync(join(tmpdir(),'cookbook-quota-'));const path=join(dir,'quota.sqlite');
   const sql=new DatabaseSync(path);sql.exec('PRAGMA journal_mode=WAL');sql.exec(migration);sql.close();
   // Capture the SQL/bindings actually used by the production helper, not a copied query.
   let query='';let bindings: unknown[]=[];
   const capture={prepare:(q:string)=>{query=q;return {bind:(...v:unknown[])=>{bindings=v;return {first:async()=>null};}};}} as unknown as D1Database;
-  await reserveAIQuota(capture,'A',new Date('2026-10-03T12:00:00Z'));
+  await reserveAIQuota(capture,'A',new Date('2026-10-03T12:00:00Z'),limit);
   try {
     const results=await Promise.all(Array.from({length:6},(_,i)=>new Promise<number>((resolve,reject)=>{
       const worker=new Worker(`const {parentPort,workerData}=require('node:worker_threads');
         const {DatabaseSync}=require('node:sqlite');const db=new DatabaseSync(workerData.path);
         db.exec('PRAGMA busy_timeout=5000');const stmt=db.prepare(workerData.query);let accepted=0;
-        for(let j=0;j<10;j++)if(stmt.get(...workerData.bindings))accepted++;
+        for(let j=0;j<25;j++)if(stmt.get(...workerData.bindings))accepted++;
         db.close();parentPort.postMessage(accepted);`,
         {eval:true,workerData:{path,query,bindings:[i%2?'A':'B',bindings[1],bindings[2]]}});
       worker.once('message',resolve);worker.once('error',reject);
       worker.once('exit',code=>{if(code!==0)reject(new Error('Quota worker failed'));});
     })));
-    assert.equal(results.reduce((a,b)=>a+b,0),4);
+    assert.equal(results.reduce((a,b)=>a+b,0),limit*2);
     const check=new DatabaseSync(path);
-    try {assert.deepEqual(check.prepare('SELECT requests FROM ai_user_usage ORDER BY owner').all().map(r=>r.requests),[2,2]);}
+    try {assert.deepEqual(check.prepare('SELECT requests FROM ai_user_usage ORDER BY owner').all().map(r=>r.requests),[limit,limit]);}
     finally {check.close();}
   } finally {rmSync(dir,{recursive:true,force:true});}
+});
+
+
+test('Owner exception is exact, server-selected and defaults to the tester limit', () => {
+  assert.equal(personalAILimit('owner@example.test',' OWNER@example.test '),20);
+  for (const configured of [undefined,'','  ']) assert.equal(personalAILimit('owner@example.test',configured),2);
+  assert.equal(personalAILimit(undefined,'owner@example.test'),2);
+  assert.equal(personalAILimit('other@example.test','owner@example.test'),2);
+  assert.equal(personalAILimit('owner@example.test.attacker.test','owner@example.test'),2);
+});
+
+test('Owner increase preserves spent attempts, tester separation, rollback and UTC reset', async () => {
+  const sql=new DatabaseSync(':memory:');sql.exec(migration);const db=adapter(sql);
+  const now=new Date('2026-12-31T23:59:59Z');
+  try {
+    await reserveAIQuota(db,'owner',now);await reserveAIQuota(db,'owner',now);
+    const limit=personalAILimit('owner@example.test','owner@example.test');
+    assert.equal((await readAIQuota(db,'owner',now,limit)).remaining,18);
+    const results=await Promise.all(Array.from({length:50},()=>reserveAIQuota(db,'owner',now,limit)));
+    assert.equal(results.filter(Boolean).length,18);
+    assert.equal((await readAIQuota(db,'owner',now,limit)).remaining,0);
+    assert.equal((await readAIQuota(db,'tester',now)).remaining,2);
+    assert.equal((await readAIQuota(db,'owner',new Date('2027-01-01T00:00:00Z'),limit)).remaining,20);
+    assert.equal(await reserveAIQuota(db,'owner',now),null); // rollback never refunds or resets history
+    assert.equal(sql.prepare('SELECT requests FROM ai_user_usage WHERE owner=?').get('owner')?.requests,20);
+  } finally {sql.close();}
 });

@@ -14,7 +14,7 @@ No complete recipe translation, LLM/vector search, billing infrastructure or new
 
 ## Verified evidence
 
-- 102 tests, TypeScript and Worker build passed. Combined PR #4/#5 CI passed before merge.
+- 105 tests, TypeScript and Worker build passed. Combined PR #4/#5 CI passed before merge.
 - Authenticated live text-only AI import, explicit review/edit/save, reload/search/open passed on 19 October; quantities/ranges and review marks persisted. Test was in the in-app browser.
 - Owner confirmed real-smartphone login, navigation, search, opening/editing/saving, reload, keyboard/scrolling and an English AI image import. Library remains usable when personal AI quota is exhausted.
 - Full local photo-backup restore passed with byte integrity and protected-reference deletion tests. This does not prove production restore on a separate real account.
@@ -22,7 +22,7 @@ No complete recipe translation, LLM/vector search, billing infrastructure or new
 
 ## Open gates and risks
 
-Two actual live accounts for isolation, actual updated Cloudflare Neuron reserve, and a fresh physical iPhone text retest remain unverified. A feature freeze is not an Alpha-ready or public-release approval.
+Two actual live accounts for isolation and a fresh physical iPhone text retest remain unverified. Cloudflare Free and actual usage were checked live (80.75/10,000 before the Owner exception). A feature freeze is not an Alpha-ready or public-release approval.
 
 Production dependency audit now reports **3 high, 4 moderate, 1 low, 0 critical**; prior zero-advisory statements were historical snapshots. High findings include Next image optimization, sharp/librsvg and source-map-js. Exposure/patch verification remains open; no unaffected claim is made. Repository stays private, no new test-account access granted.
 
@@ -37,3 +37,7 @@ Root license and independent clean-clone setup are pending. Public/CV findings a
 - [P01 protocol](docs/pilot-p01.md)
 
 Earlier implementation details remain in Git history. This file describes the current state rather than repeating outdated initial-release claims.
+
+## Owner AI freeze exception
+
+P01 has not started; hold until renewed text/image live acceptance and new freeze. Keep Cloudflare Free; configured Owner 20 attempts/UTC day, other accounts 2. No provider switch or paid plan. [Comparison and acceptance record](docs/ai-usage-freeze-exception.md).

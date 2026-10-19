@@ -6,10 +6,12 @@ import {imageType} from '@/lib/model';
 import {aiPrompt} from '@/lib/recipe-ai';
 import {recipeModel,providerRequest} from '@/lib/cloudflare-ai';
 import {z} from 'zod';
-import {readAIQuota,reserveAIQuota} from '@/lib/ai-quota';
-function config(){return env as unknown as {CF_AI_ACCOUNT_ID?:string;CF_AI_TOKEN?:string;CF_AI_FREE_ONLY_CONFIRMED?:string};}
+import {getChatGPTUser} from '@/app/chatgpt-auth';
+import {personalAILimit,readAIQuota,reserveAIQuota} from '@/lib/ai-quota';
+function config(){return env as unknown as {AI_OWNER_EMAIL?:string;CF_AI_ACCOUNT_ID?:string;CF_AI_TOKEN?:string;CF_AI_FREE_ONLY_CONFIRMED?:string};}
+async function limitFor(userId:string){const user=await getChatGPTUser();return personalAILimit(user?.userId===userId?user.email:undefined,config().AI_OWNER_EMAIL);}
 function ready(){const c=config();return /^[a-f0-9]{32}$/i.test(c.CF_AI_ACCOUNT_ID??'')&&!!c.CF_AI_TOKEN&&c.CF_AI_TOKEN!==c.CF_AI_ACCOUNT_ID&&c.CF_AI_FREE_ONLY_CONFIRMED==='true';}
-export async function GET(req:Request){const auth=await authorize(req);if(auth.error)return auth.error;try{return json({available:ready(),...await readAIQuota(db(),auth.user)});}catch{return json({error:'Tageslimit kann gerade nicht geladen werden. / Daily usage unavailable.'},503);}}
+export async function GET(req:Request){const auth=await authorize(req);if(auth.error)return auth.error;try{return json({available:ready(),...await readAIQuota(db(),auth.user,new Date(),await limitFor(auth.user))});}catch{return json({error:'Tageslimit kann gerade nicht geladen werden. / Daily usage unavailable.'},503);}}
 export async function POST(req:Request){
  const auth=await authorize(req,true);if(auth.error)return auth.error;
  if(!ready()) return json({error:'Cloudflare-Zugang noch nicht eingerichtet. / Cloudflare connection not configured.'},503);
@@ -20,8 +22,9 @@ export async function POST(req:Request){
   if(input.image){const bytes=Uint8Array.from(atob(input.image),c=>c.charCodeAt(0));if(bytes.length>2_000_000||imageType(bytes)!=='image/jpeg')return json({error:'Ungültiges Bild / Invalid image'},400);}
   // Atomic personal daily cap. Provider failures consume the reserved attempt.
   stage='quota';
-  const reservation=await reserveAIQuota(db(),auth.user);
-  if(!reservation)return json({error:'Deine 2 KI-Versuche für heute sind verbraucht. Ab 00:00 UTC stehen dir wieder 2 Versuche zur Verfügung. Manuelle Bearbeitung und andere Imports bleiben verfügbar. / Your 2 AI attempts for today are used. Two new attempts become available at 00:00 UTC. Manual editing and other imports remain available.',reason:'USER_AI_DAILY_LIMIT'},429);
+  const dailyLimit=await limitFor(auth.user);
+  const reservation=await reserveAIQuota(db(),auth.user,new Date(),dailyLimit);
+  if(!reservation)return json({error:`Deine ${dailyLimit} KI-Versuche für heute sind verbraucht. Ab 00:00 UTC stehen dir wieder ${dailyLimit} Versuche zur Verfügung. Manuelle Bearbeitung und andere Imports bleiben verfügbar. / Your ${dailyLimit} AI attempts for today are used. ${dailyLimit} new attempts become available at 00:00 UTC. Manual editing and other imports remain available.`,reason:'USER_AI_DAILY_LIMIT'},429);
   const c=config();
   stage='provider';
   const fields=await extractProviderRecipe(`https://api.cloudflare.com/client/v4/accounts/${c.CF_AI_ACCOUNT_ID}/ai/run/${recipeModel}`,{method:'POST',headers:{Authorization:`Bearer ${c.CF_AI_TOKEN}`,'Content-Type':'application/json'},body:JSON.stringify(providerRequest(aiPrompt(input.language,input.text,input.estimate),input.image))},input.language);
