@@ -93,3 +93,10 @@ Live reproduziert: Gemma kann bei fehlender Portionsangabe yield:null liefern; d
 ## Live-Text-only-Abnahme: 19. Oktober 2026
 
 Nach Nutzeranmeldung vollständiger produktiver Textimport im In-app-Browser bestanden: ausschließlich englischer Text, Cloudflare-AI-Entwurf auf Deutsch, ausdrücklich übernehmen/reviewen, Titel/Notiz ändern, bewusst speichern, Reload, Suche, Öffnen. Fünf Zutaten, drei Schritte, 8–10 Blätter und 2–3 Zweige sowie Herkunfts-/Prüfmarkierungen erhalten. Genau ein Versuch verbraucht (2/2 → 1/2). Synthetisches Rezept `Alpha Text-AI Live 2026-10-19` zur Sichtprüfung gespeichert. Der frühere Login-Blocker für diesen Nachweis ist aufgehoben; physischer iPhone/Safari-Texttest wird nicht zusätzlich behauptet. Details in ai-text-image-comparison-2026-10-19.md. Keine neue Laufzeitänderung.
+
+
+## Founder-Freeze-Ausnahme: Owner-KI-Nutzung, 19.10.2026
+
+Owner-Konfiguration serverseitig: 20 Versuche je UTC-Tag, andere Nutzer weiterhin 2. Atomare Nutzer-/Tageszähler und bisher verbrauchte Versuche bleiben erhalten. Cloudflare Free im Dashboard erneut bestätigt; tatsächlicher Tagesstand vor neuer Abnahme 80,75/10.000 Neurons (Reserve 9.919,25). Keine kostenpflichtige Aktivierung. [Vergleich, Tests, Live-Abnahme und Rollback](ai-usage-freeze-exception.md) sind der aktuelle Nachweis für diese begrenzte Ausnahme. P01 hat noch nicht begonnen; neuer Freeze erst nach erfolgreicher Text- und Bild-Liveabnahme. Frühere offene Live-Zwei-Konten-/Security-Grenzen bleiben bestehen.
+
+Erneute Abnahme der Owner-Ausnahme bestanden: Text-only und Bild-only jeweils KI-Entwurf → ausdrücklich übernehmen/reviewen → speichern → Reload → Suche/Öffnen. Owner-Kontingent korrekt 19/20 → 18/20 → 17/20. 105 Tests, TypeScript, Worker-Build und CI bestanden. Neuer Freeze `alpha-freeze-2026-10-20-owner-ai` am reviewten Endstand; ursprünglicher Tag unverändert. Keine neue physische iPhone-Abnahme oder Live-Zwei-Konten-Abnahme behauptet.
