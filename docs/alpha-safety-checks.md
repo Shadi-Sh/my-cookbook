@@ -2,6 +2,12 @@
 
 Prüfstand: 2026-10-03 (Europe/Berlin). Fokus dieses Changes: Datenintegrität und sichere private Alpha-Nutzung. Kein neuer KI-Anbieter, keine zusätzliche Infrastruktur, keine Änderung der Sites-Freigabe. Parallele Product-Metriken werden separat vorbereitet und sind nicht Teil dieses Changes.
 
+## Aktuelle Korrektur des Smartphone-Nachweises: 19. Oktober 2026
+
+Founder stellt klar: Der erfolgreiche englische Bildimport auf dem echten Smartphone lief **mit Cloudflare AI**. Der mobile AI-Bildpfad gilt daher live als bestanden. Die früheren Einträge „Smartphone-KI-Bildimport offen“ beschreiben einen überholten Zwischenstand. Gemeldet sind zwei fehlgeschlagene Text-only-AI-Imports; sie dürfen nicht als Ausfall des gesamten Cloudflare-Diensts oder als fehlgeschlagener mobiler Bildpfad ausgewiesen werden.
+
+Text-Requestvergleich und aktueller Nachweis stehen in `ai-text-image-comparison-2026-10-19.md`. Zwei echte Live-Konten und tatsächliche aktualisierte Providerreserve bleiben unabhängig davon offen.
+
 ## Ergebnis und Grenzen
 
 | Prüfpunkt | Nachweis | Status |
