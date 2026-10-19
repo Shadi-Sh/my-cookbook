@@ -31,3 +31,12 @@ test('User language overrides provider language labels and every estimated time 
  const f=parseAIResult(JSON.stringify({recipe:{title:'Pasta',language:'German',prep:5,cook:15,totalMinutes:20},estimates:[{field:'totalMinutes',reason:'Estimated 15–25 minutes'}]}),'de');
  assert.equal(f.language,'de');assert.equal(f.totalMinutes,20);assert.equal(f.aiMarks?.totalMinutes.origin,'estimated');assert.equal(f.aiMarks?.totalMinutes.status,'unreviewed');
 });
+
+test('Live Gemma unknown yield null becomes absent without losing the valid recipe or inventing servings',()=>{
+ const fields=parseAIResult(JSON.stringify({recipe:{title:'Synthetic soup',yield:null,rest:null,ingredients:[{name:'potato',quantity:500,unit:'g'}],steps:['Cook.']},estimates:[]}), 'de');
+ assert.equal(fields.yield,undefined);assert.equal(fields.aiMarks?.yield,undefined);
+ assert.equal(fields.rest,null);assert.equal(fields.ingredients?.length,1);assert.equal(fields.steps?.length,1);
+ assert.throws(()=>parseAIResult(JSON.stringify({recipe:{yield:0},estimates:[]}),'de'));
+ assert.throws(()=>parseAIResult(JSON.stringify({recipe:{yield:-1},estimates:[]}),'de'));
+ assert.throws(()=>parseAIResult(JSON.stringify({recipe:{yield:'four'},estimates:[]}),'de'));
+});

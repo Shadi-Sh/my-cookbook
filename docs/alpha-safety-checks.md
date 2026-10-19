@@ -2,6 +2,12 @@
 
 Prüfstand: 2026-10-03 (Europe/Berlin). Fokus dieses Changes: Datenintegrität und sichere private Alpha-Nutzung. Kein neuer KI-Anbieter, keine zusätzliche Infrastruktur, keine Änderung der Sites-Freigabe. Parallele Product-Metriken werden separat vorbereitet und sind nicht Teil dieses Changes.
 
+## Aktuelle Korrektur des Smartphone-Nachweises: 19. Oktober 2026
+
+Founder stellt klar: Der erfolgreiche englische Bildimport auf dem echten Smartphone lief **mit Cloudflare AI**. Der mobile AI-Bildpfad gilt daher live als bestanden. Die früheren Einträge „Smartphone-KI-Bildimport offen“ beschreiben einen überholten Zwischenstand. Gemeldet sind zwei fehlgeschlagene Text-only-AI-Imports; sie dürfen nicht als Ausfall des gesamten Cloudflare-Diensts oder als fehlgeschlagener mobiler Bildpfad ausgewiesen werden.
+
+Text-Requestvergleich und aktueller Nachweis stehen in `ai-text-image-comparison-2026-10-19.md`. Zwei echte Live-Konten und tatsächliche aktualisierte Providerreserve bleiben unabhängig davon offen.
+
 ## Ergebnis und Grenzen
 
 | Prüfpunkt | Nachweis | Status |
@@ -79,3 +85,11 @@ Persönliche Quota privat live veröffentlicht; Live-Anzeige 2/2 → 1/2 nach er
 Vom Nutzer praktisch bestätigt, ohne KI: Login, mobile Navigation, bestehende Rezepte öffnen, Suche, Bearbeiten und Speichern, Reload, Bildschirmtastatur/Scrolling sowie allgemeine mobile UI. Persönliches KI-Tageskontingent war bereits erreicht; der vollständige KI-Bildimport wurde dadurch blockiert und wird nach dem nächsten UTC-Reset separat getestet. Dies ist ein Quotenhindernis, kein belegter Erkennungsfehler oder fehlender Produktbedarf.
 
 Smartphone-Kernflow bis auf KI-Bildimport vom Nutzer als bestanden gemeldet. Geräte-/Browserdetails wurden nicht angegeben. Foto-Backupdownload und Restore sind in diesem Bericht nicht gesondert bestätigt; der bisherige Nachweis dafür bleibt lokal. Keine vollständige Alpha-ready-Freigabe: Smartphone-KI-Bildimport, zwei echte Live-Konten und aktualisierte tatsächliche Cloudflare-Neuronreserve bleiben offen.
+
+## Text-KI-Fehler vom 5. Oktober 2026
+
+Live reproduziert: Gemma kann bei fehlender Portionsangabe yield:null liefern; der strenge Parser lehnte dann den gesamten Entwurf ab. Minimalfix lässt diesen unbekannten optionalen Wert weg. Sichere Fehlerkategorien trennen Timeout, Provider-Antwort, generiertes JSON und Schema; keine Rezeptinhalte/Secrets in Logs. 102 Tests, TypeScript, Build und direkte Live-Verarbeitung erfolgreich; privat veröffentlicht. Die konkrete alte Nutzerreferenz ist nicht rückwirkend zugeordnet. iPhone-End-to-End-Wiederholung mit verfügbarem Kontingent bleibt offen. Details: ai-text-diagnosis-2026-10-05.md.
+
+## Live-Text-only-Abnahme: 19. Oktober 2026
+
+Nach Nutzeranmeldung vollständiger produktiver Textimport im In-app-Browser bestanden: ausschließlich englischer Text, Cloudflare-AI-Entwurf auf Deutsch, ausdrücklich übernehmen/reviewen, Titel/Notiz ändern, bewusst speichern, Reload, Suche, Öffnen. Fünf Zutaten, drei Schritte, 8–10 Blätter und 2–3 Zweige sowie Herkunfts-/Prüfmarkierungen erhalten. Genau ein Versuch verbraucht (2/2 → 1/2). Synthetisches Rezept `Alpha Text-AI Live 2026-10-19` zur Sichtprüfung gespeichert. Der frühere Login-Blocker für diesen Nachweis ist aufgehoben; physischer iPhone/Safari-Texttest wird nicht zusätzlich behauptet. Details in ai-text-image-comparison-2026-10-19.md. Keine neue Laufzeitänderung.
