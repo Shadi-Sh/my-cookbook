@@ -15,6 +15,20 @@
       "when": 1790880328022,
       "tag": "0001_worthless_rhino",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1790892133775,
+      "tag": "0002_wide_sumo",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1791055675638,
+      "tag": "0003_empty_zaran",
+      "breakpoints": true
     }
   ]
 }

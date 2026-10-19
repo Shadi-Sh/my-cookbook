@@ -1,3 +1,4 @@
+import {AIError} from './ai-errors.ts';
 import {z} from 'zod';
 import {unitCatalog} from './units.ts';
 import {CoreSchema,type Core} from './model.ts';
@@ -5,11 +6,20 @@ export const aiFields = ['title','description','category','cuisine','yield','yie
 export const AIRecipeSchema=CoreSchema.pick({title:true,description:true,category:true,cuisine:true,yield:true,yieldUnit:true,prep:true,cook:true,rest:true,totalMinutes:true,ingredients:true,steps:true,notes:true,language:true,sourceText:true}).partial().strict();
 const ResultSchema=z.object({recipe:AIRecipeSchema,estimates:z.array(z.object({field:z.enum(aiFields),reason:z.string().min(1).max(1000)}).strict()).max(13)}).strict();
 export function parseAIResult(output:string, language:'de'|'en') {
- if(output.length>60000) throw new Error('AI response too large');
- const raw=JSON.parse(output.trim().replace(/^```(?:json)?\s*/,'').replace(/\s*```$/,''));
+ if(output.length>60000) throw new AIError('AI_PROVIDER_RESPONSE_TOO_LARGE');
+ let raw;
+ try {raw=JSON.parse(output.trim().replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,''));}
+ catch {throw new AIError('AI_OUTPUT_JSON_INVALID');}
  // Output language is selected by the user, not inferred from provider labels.
- if(raw?.recipe && typeof raw.recipe==='object' && !Array.isArray(raw.recipe))raw.recipe.language=language;
- const data=ResultSchema.parse(raw);
+ if(raw?.recipe && typeof raw.recipe==='object' && !Array.isArray(raw.recipe)){
+  raw.recipe.language=language;
+  // Gemma can return null for an unknown yield. Omit only this unknown
+  // optional value; never invent a serving count or relax invalid numbers.
+  if(raw.recipe.yield===null)delete raw.recipe.yield;
+ }
+ const parsed=ResultSchema.safeParse(raw);
+ if(!parsed.success)throw new AIError('AI_OUTPUT_SCHEMA_INVALID');
+ const data=parsed.data;
  const fields:Partial<Core>={...data.recipe,language,aiMarks:{}};
  for(const key of aiFields) {
   const value=fields[key]; if(value===undefined || value===null || value==='' || (Array.isArray(value)&&!value.length)) continue;

@@ -20,8 +20,8 @@ export default function RecipeImporter({lang, hasContent, onApply, onBusy}: {lan
     setBusy(true); onBusy(true); setError(''); setWebRecipes([]);
     try {
       const response = await fetch('/api/recipe-link', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({url,language:lang})});
-      const result = await response.json() as {error?: string; recipes: {fields: Partial<Core>; warnings: string[]}[]};
-      if (!response.ok) throw new Error(result.error || t('Import fehlgeschlagen.', 'Import failed.'));
+      const result = await response.json() as {error?: string; requestId?: string; recipes: {fields: Partial<Core>; warnings: string[]}[]};
+      if (!response.ok) throw new Error((result.error || t('Import fehlgeschlagen.', 'Import failed.'))+(result.requestId?` (Ref: ${result.requestId})`:''));
       setWebRecipes(result.recipes);
     } catch(e) {setError(e instanceof Error ? e.message : t('Import fehlgeschlagen.', 'Import failed.'));}
     finally {setBusy(false); onBusy(false);}

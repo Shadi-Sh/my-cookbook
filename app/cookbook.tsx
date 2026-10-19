@@ -1,6 +1,7 @@
 "use client";
+import {parseBackup,serializeBackup,restoreBackup,decodeBackupImage,referencedImages,validateNotebookSize,type Backup} from "@/lib/backup";
 import {amountText} from "@/lib/units";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, type ReactNode } from "react";
 import RecipeEditor from "./recipe-editor";
 import { Picker, Field } from "./widgets";
 import { api } from "@/lib/client";
@@ -32,6 +33,7 @@ import {
   History,
 } from "lucide-react";
 import {
+  useSidebar,
   SidebarProvider,
   Sidebar,
   SidebarContent,
@@ -104,6 +106,10 @@ const photo = (r: Recipe) =>
     : r.demo && r.category === "Baking"
       ? "/images/cookies.png"
       : null;
+function CloseMobileNavigation({children}:{children:ReactNode}){
+ const {setOpenMobile}=useSidebar();
+ return <div style={{display:'contents'}} onClick={event=>{if((event.target as Element).closest('button'))setOpenMobile(false);}}>{children}</div>;
+}
 export default function Cookbook() {
   const [lang, setLang] = useState<Lang>("de");
   const t = (de: string, en: string) => (lang === "de" ? de : en);
@@ -126,10 +132,7 @@ export default function Cookbook() {
   const [raw, setRaw] = useState("");
   const [importError, setImportError] = useState("");
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [restoreData, setRestoreData] = useState<{
-    state: State;
-    images: Record<string, { mime: string; data: string }>;
-  } | null>(null);
+  const [restoreData, setRestoreData] = useState<Backup | null>(null);
   const [pantryInput, setPantryInput] = useState("");
   const [maxMissing, setMaxMissing] = useState("all");
   const [tagInput, setTagInput] = useState("");
@@ -171,13 +174,17 @@ export default function Cookbook() {
     setBusy(true);
     try {
       const valid = StateSchema.parse(next);
+      validateNotebookSize(valid);
       const result = await api("/api/state", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ state: valid, version }),
       });
+      const obsolete=referencedImages(state).filter(id=>!referencedImages(valid).includes(id));
       setState(valid);
       setVersion(result.version!);
+      const cleanup=await Promise.allSettled(obsolete.map(id=>api(`/api/images/${id}`,{method:'DELETE'})));
+      if(cleanup.some(v=>v.status==='rejected'))toast.warning(t('Gespeichert. Einige ungenutzte Fotos konnten noch nicht entfernt werden. Unter Daten & Sicherung erneut bereinigen.','Saved. Some unused photos could not be removed yet. Retry cleanup in Data & backup.'));
       return true;
     } catch (e) {
       toast.error((e as Error).message);
@@ -373,20 +380,7 @@ export default function Cookbook() {
         });
         images[id] = { mime: blob.type, data };
       }
-      download(
-        JSON.stringify(
-          {
-            schemaVersion: 1,
-            exportedAt: new Date().toISOString(),
-            state,
-            images,
-          },
-          null,
-          2,
-        ),
-        "my-cookbook-backup.json",
-        "application/json",
-      );
+      download(serializeBackup(state,images),"my-cookbook-backup.json","application/json");
       toast.success(t("Backup heruntergeladen", "Backup downloaded"));
     } catch (e) {
       toast.error((e as Error).message);
@@ -397,39 +391,7 @@ export default function Cookbook() {
   async function parseRestore(file: File) {
     try {
       if (file.size > 20 * 1024 * 1024) throw new Error("Backup exceeds 20 MB");
-      const data = JSON.parse(await file.text());
-      if (data.schemaVersion !== 1)
-        throw new Error("Unsupported backup version");
-      const restored = StateSchema.parse(data.state);
-      const images = data.images ?? {};
-      if (
-        typeof images !== "object" ||
-        Array.isArray(images) ||
-        Object.keys(images).length > 600
-      )
-        throw new Error("Invalid images");
-      const required = [
-        ...new Set(
-          restored.recipes
-            .flatMap((r) => [
-              r.imageId,
-              ...r.revisions.map((v) => v.data.imageId),
-            ])
-            .filter(Boolean),
-        ),
-      ];
-      for (const id of required) {
-        const v = images[id as string];
-        if (
-          !v ||
-          !["image/jpeg", "image/png", "image/webp"].includes(v.mime) ||
-          typeof v.data !== "string" ||
-          v.data.length > 3e6 ||
-          !/^[A-Za-z0-9+/]*={0,2}$/.test(v.data)
-        )
-          throw new Error("Invalid or missing backup image");
-      }
-      setRestoreData({ state: restored, images });
+      setRestoreData(parseBackup(await file.text()));
     } catch (e) {
       toast.error((e as Error).message);
     }
@@ -440,45 +402,12 @@ export default function Cookbook() {
     setRestoreData(null);
     setBusy(true);
     try {
-      const map: Record<string, string> = {};
-      for (const old of [
-        ...new Set(
-          data.state.recipes
-            .flatMap((r) => [
-              r.imageId,
-              ...r.revisions.map((v) => v.data.imageId),
-            ])
-            .filter((id): id is string => !!id),
-        ),
-      ]) {
-        const im = data.images[old];
-        const bytes = Uint8Array.from(atob(im.data), (c) => c.charCodeAt(0));
-        const result = await api("/api/images", {
-          method: "POST",
-          headers: { "Content-Type": im.mime },
-          body: bytes,
-        });
-        map[old] = result.id!;
-      }
-      const next = {
-        ...data.state,
-        recipes: data.state.recipes.map((r) => ({
-          ...r,
-          imageId: r.imageId ? map[r.imageId] : null,
-          revisions: r.revisions.map((v) => ({
-            ...v,
-            data: {
-              ...v.data,
-              imageId: v.data.imageId ? map[v.data.imageId] : null,
-            },
-          })),
-        })),
-      };
-      if (await commit(next)) {
-        setDetailId(null);
-        setPage("recipes");
-        toast.success(t("Backup wiederhergestellt", "Backup restored"));
-      }
+      const capacity=await api('/api/images');
+      if((capacity.remaining??0)<referencedImages(data.state).length)throw Error(t('Nicht genug Fotoplätze für eine sichere Wiederherstellung. Alte ungenutzte Fotos unter Daten & Sicherung bereinigen. Das aktuelle Kochbuch bleibt erhalten.','Not enough photo capacity for a safe restore. Clean up unused photos in Data & backup. Your current cookbook is preserved.'));
+      const saved=await restoreBackup(data,async im=>{
+        const result=await api('/api/images',{method:'POST',headers:{'Content-Type':im.mime},body:decodeBackupImage(im)});return result.id!;
+      },commit,async id=>{await api(`/api/images/${id}`,{method:'DELETE'});});
+      if(saved){setDetailId(null);setPage('recipes');toast.success(t('Backup wiederhergestellt','Backup restored'));}
     } catch (e) {
       toast.error((e as Error).message);
     } finally {
@@ -562,6 +491,7 @@ export default function Cookbook() {
   return (
     <SidebarProvider>
       <Sidebar className="cook-sidebar">
+        <CloseMobileNavigation>
         <SidebarHeader>
           <button className="brand" onClick={() => navigate("recipes")}>
             <span className="brand-mark">
@@ -616,6 +546,7 @@ export default function Cookbook() {
             {t("Privates Kochbuch", "Private cookbook")}
           </div>
         </SidebarFooter>
+        </CloseMobileNavigation>
       </Sidebar>
       <SidebarInset>
         <header className="topbar">
@@ -1791,8 +1722,8 @@ export default function Cookbook() {
                   </button>
                   <p className="small-text">
                     {t(
-                      "JSON inklusive Fotos und früherer Rezeptversionen. Grenze: 14 MB Fotodaten, 20 MB Importdatei. Bewahre die Datei privat auf.",
-                      "JSON includes photos and previous recipe versions. Limit: 14 MB of photo data, 20 MB import file. Keep the file private.",
+                      "JSON inklusive Fotos und früherer Rezeptversionen. Grenze: 14 MB Fotodaten und 20 MB vollständige Datei. Der Export wird auf Wiederherstellbarkeit geprüft. Bewahre die Datei privat auf.",
+                      "JSON includes photos and previous recipe versions. Limit: 14 MB of photo data and 20 MB for the complete file. Export is checked for restorability. Keep the file private.",
                     )}
                   </p>
                   <button
@@ -1803,6 +1734,10 @@ export default function Cookbook() {
                     <Upload size={17} />
                     {t("Backup wiederherstellen", "Restore backup")}
                   </button>
+                  <button className="secondary" disabled={busy} onClick={async()=>{
+                    setBusy(true);try{const result=await api('/api/images/cleanup',{method:'POST'});toast.success(t(`${result.removed??0} ungenutzte Fotos entfernt.`,`${result.removed??0} unused photos removed.`));}catch(e){toast.error((e as Error).message);}finally{setBusy(false);}
+                  }}>{t('Ungenutzte Fotos bereinigen','Clean up unused photos')}</button>
+                  <p className="small-text">{t('Entfernt bis zu 50 nicht referenzierte Fotos, die älter als 24 Stunden sind. Fotos aktueller Rezepte und Versionen bleiben erhalten. Bei Bedarf wiederholen.','Removes up to 50 unreferenced photos older than 24 hours. Photos used by recipes and revisions stay intact. Repeat if needed.')}</p>
                   <input
                     ref={restoreInput}
                     type="file"
@@ -1818,8 +1753,8 @@ export default function Cookbook() {
                 <section className="panel">
                   <h2>
                     {t(
-                      "AI ohne laufende API-Kosten",
-                      "AI without ongoing API costs",
+                      "KI ist optional",
+                      "AI is optional",
                     )}
                   </h2>
                   <p>
@@ -1848,8 +1783,8 @@ export default function Cookbook() {
                   </button>
                   <p className="small-text">
                     {t(
-                      "Foto-Texterkennung ist verfügbar. Eine LLM-Analyse und Internetrecherche sind noch nicht verbunden. Der optionale Check im Editor verwendet einfache Regeln.",
-                      "Photo text recognition is available. LLM analysis and web research are not connected yet. The optional editor check uses simple rules.",
+                      "Foto-Texterkennung läuft auf deinem Gerät. Cloudflare-KI ist optional und verlangt deine Zustimmung. Der Vollständigkeitscheck verwendet einfache Regeln.",
+                      "Photo OCR runs on your device. Optional Cloudflare AI requires your consent. The completeness check uses simple rules.",
                     )}
                   </p>
                   <button
