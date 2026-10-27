@@ -6,7 +6,7 @@ Private recipe texts/photos, cooking history and pantry data belong to a signed-
 
 ## Implemented controls
 
-- Owner-private deployment. Authentication comes from the trusted platform dispatcher; do not expose the Worker as an independently public service with spoofable identity headers.
+- Access-restricted deployment. Authentication comes from the trusted platform dispatcher; do not expose the Worker as an independently public service with spoofable identity headers.
 - All API reads/writes require the signed-in identity, and queries bind that identity in prepared statements. Image metadata lookup checks both image ID and owner. Notebook writes validate ownership of current/revision images.
 - Write requests require an exact same-origin Origin header. No permissive CORS, cookie-based app session or password store is added.
 - Request streams are size-limited before full assembly. Zod applies field lengths, count limits, known fields, numeric bounds and unique recipe IDs. JSON imports cannot execute code. React renders user strings as text; source strings are not automatically fetched or rendered as HTML.
@@ -44,3 +44,13 @@ Photo OCR runs on-device using same-origin pinned Tesseract worker, WASM and lan
 ## Current review: 2026-10-03
 
 The personal atomic AI cap is two attempts per authenticated user and UTC day, including provider/network failures. Owner comes from server authentication, never request input. It is not a monetary budget guarantee. Workers Free has been reverified; measured synthetic text/image token usage and the outstanding updated dashboard reading are documented in docs/alpha-ai-usage.md. Photo deletion is reference-protected, orphan cleanup is explicit, and backup compatibility/restore has automated and local runtime coverage. General upload/link rate limiting, a physical smartphone test and two real live-account isolation checks remain open. See docs/alpha-safety-checks.md for evidence and limits.
+
+## Repository readiness review — 27 October 2026
+
+The full dependency audit is now zero known advisories, including development tools; see [remediation and compatibility checks](docs/dependency-security.md). This supersedes older audit snapshots above for the repository branch only. Production has not been redeployed by this documentation/dependency change. The owner exception is 20 AI attempts/UTC day; other users retain two. Live two-account isolation remains an open verification item.
+
+Gitleaks 8.30.1 scanned all locally fetched Git refs with redacted output and found no secrets. An additional private pattern/value scan found no current configured credentials, personal email identities or personal filesystem paths in the reviewed history. Scans cannot prove absence of all secrets. CI repeats a redacted history scan and blocks high/critical dependency advisories.
+
+### Reporting a vulnerability
+
+Do not post credentials, private recipes or exploit details in public issues. Use GitHub's **Security → Report a vulnerability** if private reporting is enabled. If it is unavailable, contact the [repository owner](https://github.com/Shadi-Sh) privately through an established channel; otherwise open only a neutral request for a private contact channel, without vulnerability details. A dedicated security inbox is not configured. Enable and verify GitHub private vulnerability reporting when making the repository public; its availability has not yet been confirmed on the private repository.

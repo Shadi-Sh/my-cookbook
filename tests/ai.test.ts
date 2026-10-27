@@ -40,3 +40,10 @@ test('Live Gemma unknown yield null becomes absent without losing the valid reci
  assert.throws(()=>parseAIResult(JSON.stringify({recipe:{yield:-1},estimates:[]}),'de'));
  assert.throws(()=>parseAIResult(JSON.stringify({recipe:{yield:'four'},estimates:[]}),'de'));
 });
+
+
+test('Sparse AI drafts never acquire notebook defaults or replace absent facts',()=>{
+ const fields=parseAIResult(JSON.stringify({recipe:{title:'Soup'},estimates:[]}), 'en');
+ assert.deepEqual(Object.keys(fields).sort(),['aiMarks','language','title']);
+ assert.deepEqual(Object.keys(fields.aiMarks??{}),['title']);
+});

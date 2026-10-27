@@ -20,7 +20,10 @@ export function parseAIResult(output:string, language:'de'|'en') {
  const parsed=ResultSchema.safeParse(raw);
  if(!parsed.success)throw new AIError('AI_OUTPUT_SCHEMA_INVALID');
  const data=parsed.data;
- const fields:Partial<Core>={...data.recipe,language,aiMarks:{}};
+ // Zod 4 applies inner defaults even within partial objects. An AI draft must
+ // contain only source fields; notebook/editor defaults must not invent facts.
+ const supplied=Object.fromEntries(Object.entries(data.recipe).filter(([key])=>Object.hasOwn(raw.recipe,key)));
+ const fields:Partial<Core>={...supplied,language,aiMarks:{}};
  for(const key of aiFields) {
   const value=fields[key]; if(value===undefined || value===null || value==='' || (Array.isArray(value)&&!value.length)) continue;
   const estimate=data.estimates.find(e=>e.field===key);

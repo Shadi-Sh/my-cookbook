@@ -37,7 +37,7 @@ The accepted feature baseline is tagged `alpha-freeze-2026-10-20-owner-ai`. No n
 
 - **Verified:** the documented baseline passed 105 automated tests, TypeScript checks and the Worker build. Authenticated live text and image AI flows passed draft → review → save → reload → find again.
 - **Mobile evidence:** the owner confirmed smartphone use and an English AI image import. A fresh physical iPhone text retest remains open.
-- **Open gates:** isolation between two actual live accounts and dependency security triage remain unresolved. Synthetic acceptance tests do not count as pilot usage or product demand.
+- **Open gates:** isolation between two actual live accounts remains unresolved. Synthetic acceptance tests do not count as pilot usage or product demand.
 
 **AI allowance:** the configured owner receives **20 attempts per UTC day**; other accounts receive **2**. Provider failures count, with no automatic retries or paid fallback. Cloudflare Free remains the configured plan; its shared provider limits are separate from personal app quotas.
 
@@ -63,25 +63,25 @@ Built with Codex assistance from the owner's requirements and technical decision
 
 ## Development
 
-CI uses **Node 24** and **pnpm 11.25.0** with the committed lockfile. On an already configured checkout, run the same checks:
+Use **Node 24** and **pnpm 11.25.0**:
 
 ```sh
-npm run test
-npm run typecheck
-npm run build
+pnpm install --frozen-lockfile
+pnpm db:local
+pnpm dev
 ```
 
-Installation and runtime helpers depend on the Sites environment. An independent clean-clone setup has not yet been verified for public distribution. Keep local identity emulation restricted to loopback, and keep credentials, runtime state, backups and private pilot observations out of Git.
+See [local development](docs/local-development.md) for the loopback-only mock sign-in, optional AI configuration and checks. No cloud credentials are needed for manual local recipes. Production authentication depends on the trusted Sites dispatcher.
 
-The [CI workflow](.github/workflows/check.yml) covers the automated checks. These do not replace live account, device or recovery verification.
+The [CI workflow](.github/workflows/check.yml) runs tests, type checking, build, dependency auditing and a redacted Git-history secret scan. The public-readiness changes pass **106 tests**. These checks do not replace live account, device or recovery verification.
 
 ## Data, security and publication
 
 Notebook writes are limited to **1 MiB** (up to 500 recipes in the schema); photos to **600 per owner / 2 MiB each**. Backups support compact JSON up to **20 MiB**, with a **14 MiB raw-photo export limit**. Restore protects existing state on failure and may refuse near the photo quota. Referenced photos are protected; explicit orphan cleanup has a 24-hour grace period. **Backups are unencrypted and must stay private.**
 
-The dependency audit recorded on **19 October 2026** reports **3 high, 4 moderate and 1 low finding**; exposure and patch verification remain open. This is not a security-certified release.
+The full dependency audit on **27 October 2026** reports **zero known advisories**, including development dependencies. See [dependency remediation](docs/dependency-security.md). This is a dated scan, not a security certification. The hosted release has not been redeployed as part of repository preparation.
 
-The repository remains private and has no selected project license. Public release requires a fresh secret/history review, dependency and license checks, and verified clean-clone setup. Preserve third-party notices; do not publish personal recipes, backups, participant data or private screenshots.
+Original project code is available under the [MIT license](LICENSE), with [third-party notices](THIRD_PARTY_NOTICES.md) preserved. See [contributing](CONTRIBUTING.md) and [security reporting](SECURITY.md). Repository visibility is a separate release decision; a public source repository does not expose private recipe libraries.
 
 ## Documentation
 

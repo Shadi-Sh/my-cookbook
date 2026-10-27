@@ -47,3 +47,15 @@ next-env.d.ts
 
 # Reproducible, locally hosted OCR runtime generated from pinned packages.
 /public/ocr/
+
+# Public repository hygiene
+*.tsbuildinfo
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.db
+/backups/
+/pilot-data/
+/alpha-gate-evidence/
+*backup*.json
+!.env.example
