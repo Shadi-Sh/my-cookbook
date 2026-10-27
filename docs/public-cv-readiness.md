@@ -1,35 +1,25 @@
-# Public-Repo-/CV-Readiness – 19. Oktober 2026
+# Public repository / portfolio readiness — 27 October 2026
 
-**Ergebnis:** private technische Fallstudie ist vorbereitet; öffentliche Veröffentlichung noch nicht freigegeben. Repository bleibt PRIVATE. Keine Lizenz oder Sichtbarkeit wurde eigenständig geändert.
+Repository preparation is complete locally; review and CI must pass before merging. GitHub visibility remains private until an explicit publication instruction. The Founder selected MIT for original project code. Third-party notices remain in place. No product features or hosting settings were changed.
 
-## Sicherheits- und Privacy-Check
+## Evidence
 
-Im vorgefundenen Stand 178 getrackte Dateien und 272 erreichbare Git-History-Blobs intern geprüft: kein Treffer für den aktuellen Cloudflare-Token, typische GitHub-/OpenAI-Schlüssel oder Private-Key-Marker. Kein getracktes .env, keine gefundenen persönlichen Maschinenpfade oder Owner-Mailadresse. Ausgaben enthielten nur Zählwerte/Dateinamen, keine Secrets. Dies ist ein begrenzter Muster-/Wertscan, kein Beweis, dass keine anderen Geheimnisse existieren. Vor tatsächlichem Public-Schalten erneuten unabhängigen Secret-/History-Review machen.
+- Fresh independent clone from main, without copied credentials or runtime state; Node 24 / pnpm 11.25.0. Documented [local setup](local-development.md), local migrations and authenticated notebook API verified.
+- 106 automated tests, TypeScript, Worker build and Drizzle schema check pass. The extra regression test protects sparse AI drafts from invented editor defaults during the Zod update.
+- Full dependency audit: **0 critical / high / moderate / low** on this date. Before remediation: 2 critical, 31 high, 29 moderate, 10 low including tooling. [Details and tradeoffs](dependency-security.md).
+- Gitleaks 8.30.1 with redacted output: no findings across all fetched branches/tags. Additional private scan of 295 reachable historical blobs found no configured Cloudflare credentials, private-key markers, personal filesystem paths or personal email identities in the checked patterns. Final branch history is rescanned after committing. These checks are bounded evidence, not proof against every possible secret.
+- Removed tracked TypeScript cache; ignored databases, backups and pilot evidence. Example environment contains placeholders only. Hosting project IDs are identifiers, not authentication credentials. No private recipes, production databases or participant observations were copied into this checkout.
+- MIT selected explicitly; vendored notices retained. Dependency license inventory includes MIT, Apache, BSD and other licenses, including MPL/LGPL/CC-BY. The root MIT license does not replace those terms. [Notices](../THIRD_PARTY_NOTICES.md).
+- CI adds a pinned, checksum-verified, redacted history scanner and blocks high/critical dependency advisories. No new paid service or infrastructure.
 
-Aktuelle Produktions-Dependency-Prüfung mit `pnpm audit --prod --json`: **3 high, 4 moderate, 1 low, 0 critical**. Die alte Aussage „0 advisories“ war ein historischer Snapshot und ist heute nicht gültig.
+## Publication and runtime boundaries
 
-| Hoher Befund | Gefundene Version | Laut Advisory gepatcht ab | Vorläufige Einordnung |
-|---|---|---|---|
-| source-map-js: DoS über manipulierte Source Maps | 1.2.1 | 1.2.2 | Transitiv über Next/PostCSS; kein App-Pfad für Nutzer-Source-Maps gefunden, Laufzeit-/Build-Erreichbarkeit noch zu prüfen |
-| sharp / librsvg | 0.35.4 | 0.35.5 | Optional transitiv über Next; App-Fotos werden browserseitig verarbeitet, das allein beweist keine Unbetroffenheit |
-| Next Image Optimization SSRF | 16.3.6 | 16.3.8 | Kein next/image-Import im App-Code gefunden; der Worker enthält aber `_next/image`/`_vinext/image`-Routenerkennung. Nicht als ausgeschlossen bewerten |
+Before changing visibility, merge the reviewed changes with green CI and enable/verify GitHub private vulnerability reporting. No public reporting channel is claimed as already active. Do not rewrite history merely to remove nonsecret project identifiers.
 
-Quellen: [Source Maps](https://github.com/advisories/GHSA-68fv-2mgg-jv7q), [sharp](https://github.com/advisories/GHSA-wq5f-xc86-pv6w), [Image Optimization](https://github.com/advisories/GHSA-cjq9-62q9-8jv4). Weitere Next-Befunde betreffen Cache/Draft-Mode/Metadata/Devserver; genaue Anwendbarkeit nicht nachgewiesen. Der Audit-Eintrag ist kein bestätigter Exploit unserer App. Private Owner-Freigabe ersetzt trotzdem keine Behebung/Triage.
+The live Site still requires a separate controlled deployment and runtime verification for the dependency patches. Local tests do not establish that production runs these patches. Real two-account owner-isolation verification and the documented device/pilot gates remain independent of source publication. No Alpha-ready, penetration-test or validated-demand claim is made.
 
-Keine Pakete automatisch aktualisiert und kein kostenpflichtiger Scanner eingeführt. Nächster Security-Schritt: kleine separate Patch-/Erreichbarkeitsprüfung, kompatible Versionen und Release-Age-Policy beachten, Tests/TypeScript/Build und privaten Runtime-Smoke-Test durchführen. Offene hohe Findings schließen eine uneingeschränkte Public-/Security-Ready-Aussage aus.
+## Honest CV description
 
-## Veröffentlichungsvoraussetzungen
+“My Cookbook: multilingual recipe notebook built with React/TypeScript, a Worker backend and SQLite/object storage. Implemented optional structured text/image AI extraction with explicit review and provenance, atomic per-user daily quotas, owner-bound storage, validated photo backups and CI with 106 tests, type checking, build and dependency/secret checks.”
 
-- Root-Lizenz fehlt (`licenseInfo=null`); Founder muss eine Lizenzentscheidung treffen. Vorhandene Drittanbieter-Lizenzdateien beibehalten; vollständige transitive Lizenz-/Assetprüfung noch offen.
-- Runtime- und Auth-Abhängigkeit von Sites offen erklären. Ein frischer öffentlicher Clone ist noch nicht als unabhängig startbares Produkt verifiziert; CI läuft auf Linux mit vorhandenen Hilfsskripten. Clean-clone-Setup und sichere Beispieldaten vor Public prüfen.
-- Hostingmanifest/Projektkennungen, lokale Betriebsdokumente, Testprotokolle und Screenshots vor Veröffentlichung auf unbeabsichtigte Account-/Studieninformationen prüfen. Keine privaten Rezeptbackups oder echten Nutzerinhalte veröffentlichen.
-- README und PROJECT_STATUS wurden auf den tatsächlichen Stand korrigiert. Keine automatische Rezeptübersetzung, semantische Suche, große Testgruppe oder Production-Skalierung behaupten.
-- Repository-Sichtbarkeit erst nach explizitem Veröffentlichungsauftrag und Abnahme dieser Punkte ändern.
-
-## Glaubwürdiger CV-Entwurf
-
-„My Cookbook – privates Software-/AI-Projekt: mehrsprachige Rezeptverwaltung mit React/TypeScript, Worker-Backend und SQLite-/Objektspeicher. Strukturierter Text-/Bildimport mit optionaler Cloudflare-KI, explizitem Review und persistierten Herkunftsmarkierungen; persönliche atomare Tagesquoten, Owner-Isolation, validierte Foto-Backups und CI mit 102 Tests, Typprüfung und Build.“
-
-Die Umsetzung erfolgte mit Codex-Unterstützung. Im Portfolio transparent nennen; persönliche Architekturentscheidungen, Review und Verständnis konkret erläutern. Keine nachgewiesene große Nutzerbasis oder vollständig abgeschlossene Security-Abnahme behaupten. P01 ist Owner-Pilot, nicht unabhängige Marktvalidierung.
-
-Gesprächspunkte: Warum ein versioniertes JSON-Notebook für Alpha reicht; atomare SQL-Reservierung statt verteiltem Billing; Authentifizierung versus Daten-Ownerprüfung; KI-Output als untrusted input; Backup-Upload vor State-Swap; Unterschied zwischen automatisierten Tests, Live-Nachweisen und offenen Gates. Die bekannten Einschränkungen sind Teil der Fallstudie.
+Disclose Codex assistance and explain your own requirements, technical decisions and reviews. P01 is the owner pilot, not independent market validation. Useful interview topics: bounded JSON notebooks; atomic SQL quota reservation; trusted authentication versus ownership checks; AI output as untrusted input; recovery before state replacement; and the limits of automated versus live verification.

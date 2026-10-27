@@ -1,4 +1,4 @@
-# Project status – 19 October 2026
+# Project status – 27 October 2026
 
 ## Alpha scope
 
@@ -24,9 +24,9 @@ No complete recipe translation, LLM/vector search, billing infrastructure or new
 
 Two actual live accounts for isolation and a fresh physical iPhone text retest remain unverified. Cloudflare Free and actual usage were checked live (80.75/10,000 before the Owner exception). A feature freeze is not an Alpha-ready or public-release approval.
 
-Production dependency audit now reports **3 high, 4 moderate, 1 low, 0 critical**; prior zero-advisory statements were historical snapshots. High findings include Next image optimization, sharp/librsvg and source-map-js. Exposure/patch verification remains open; no unaffected claim is made. Repository stays private, no new test-account access granted.
+Repository preparation now passes 106 tests, TypeScript, build and a full zero-advisory dependency audit. Targeted dependency updates and a sparse-AI-draft regression fix are documented in [dependency security](docs/dependency-security.md). Production has not been redeployed with these changes. Repository stays private; no new test-account access was granted.
 
-Root license and independent clean-clone setup are pending. Public/CV findings and an honest CV description are in [readiness](docs/public-cv-readiness.md). Codex assistance is disclosed. No large user base, completed penetration test or validated product demand is claimed.
+MIT was explicitly selected; third-party notices and a verified local setup are included. Public/CV findings and an honest CV description are in [readiness](docs/public-cv-readiness.md). Codex assistance is disclosed. No large user base, completed penetration test or validated product demand is claimed.
 
 ## Reference documents
 
