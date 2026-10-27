@@ -1,3 +1,5 @@
+> Security release verified on 27 October 2026: Sites v13; renewed feature freeze `alpha-freeze-2026-10-27-security`. Both live AI flows passed after dependency patches. See [release evidence and remaining gates](security-release-2026-10-27.md). This supersedes the release status below; historical tags remain unchanged.
+
 > Abgenommene Founder-Ausnahme: [Owner-KI-Nutzung](ai-usage-freeze-exception.md). Text- und Bild-Liveabnahme bestanden, 105 Tests/TypeScript/Build und CI erfolgreich. Neuer Freeze: `alpha-freeze-2026-10-20-owner-ai` am reviewten Endstand. P01 hat noch nicht begonnen; Start erst nach Setzen dieses Tags. Der unten genannte ursprüngliche Freeze-Tag bleibt unverändert.
 
 # Alpha Feature Freeze – 19. Oktober 2026

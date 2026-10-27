@@ -1,3 +1,5 @@
+> Release update, 27 October 2026: repository public, MIT and private vulnerability reporting enabled. Security patches deployed as Sites v13; live text/image acceptance passed. Renewed feature freeze: `alpha-freeze-2026-10-27-security`. Remaining account/device gates are documented in [release evidence](docs/security-release-2026-10-27.md).
+
 # Security model
 
 ## Assets and trust boundaries
@@ -47,10 +49,10 @@ The personal atomic AI cap is two attempts per authenticated user and UTC day, i
 
 ## Repository readiness review — 27 October 2026
 
-The full dependency audit is now zero known advisories, including development tools; see [remediation and compatibility checks](docs/dependency-security.md). This supersedes older audit snapshots above for the repository branch only. Production has not been redeployed by this documentation/dependency change. The owner exception is 20 AI attempts/UTC day; other users retain two. Live two-account isolation remains an open verification item.
+The full dependency audit is now zero known advisories, including development tools; see [remediation and compatibility checks](docs/dependency-security.md). This supersedes older audit snapshots above for the repository branch only. Production now runs the separately verified Sites v13 security release. The owner exception is 20 AI attempts/UTC day; other users retain two. Live two-account isolation remains an open verification item.
 
 Gitleaks 8.30.1 scanned all locally fetched Git refs with redacted output and found no secrets. An additional private pattern/value scan found no current configured credentials, personal email identities or personal filesystem paths in the reviewed history. Scans cannot prove absence of all secrets. CI repeats a redacted history scan and blocks high/critical dependency advisories.
 
 ### Reporting a vulnerability
 
-Do not post credentials, private recipes or exploit details in public issues. Use GitHub's **Security → Report a vulnerability** if private reporting is enabled. If it is unavailable, contact the [repository owner](https://github.com/Shadi-Sh) privately through an established channel; otherwise open only a neutral request for a private contact channel, without vulnerability details. A dedicated security inbox is not configured. Enable and verify GitHub private vulnerability reporting when making the repository public; its availability has not yet been confirmed on the private repository.
+Do not post credentials, private recipes or exploit details in public issues. GitHub private vulnerability reporting is enabled: use **Security → Report a vulnerability**. If it is unavailable, contact the [repository owner](https://github.com/Shadi-Sh) privately through an established channel; otherwise open only a neutral request for a private contact channel, without vulnerability details. A dedicated security inbox is not configured. Private vulnerability reporting was verified enabled after publication on 27 October 2026.

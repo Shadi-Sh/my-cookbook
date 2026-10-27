@@ -1,6 +1,8 @@
+> Release update, 27 October 2026: repository public, MIT and private vulnerability reporting enabled. Security patches deployed as Sites v13; live text/image acceptance passed. Renewed feature freeze: `alpha-freeze-2026-10-27-security`. Remaining account/device gates are documented in [release evidence](security-release-2026-10-27.md).
+
 # Public repository / portfolio readiness — 27 October 2026
 
-Repository preparation is complete locally; review and CI must pass before merging. GitHub visibility remains private until an explicit publication instruction. The Founder selected MIT for original project code. Third-party notices remain in place. No product features or hosting settings were changed.
+Repository preparation is complete locally; review and CI must pass before merging. The Founder explicitly authorized public visibility; GitHub now reports PUBLIC. The Founder selected MIT for original project code. Third-party notices remain in place. No product features or hosting settings were changed.
 
 ## Evidence
 
@@ -14,9 +16,9 @@ Repository preparation is complete locally; review and CI must pass before mergi
 
 ## Publication and runtime boundaries
 
-Before changing visibility, merge the reviewed changes with green CI and enable/verify GitHub private vulnerability reporting. No public reporting channel is claimed as already active. Do not rewrite history merely to remove nonsecret project identifiers.
+PR #8 was merged with green CI. Public visibility and GitHub private vulnerability reporting were explicitly authorized, enabled and verified. Do not rewrite history merely to remove nonsecret project identifiers.
 
-The live Site still requires a separate controlled deployment and runtime verification for the dependency patches. Local tests do not establish that production runs these patches. Real two-account owner-isolation verification and the documented device/pilot gates remain independent of source publication. No Alpha-ready, penetration-test or validated-demand claim is made.
+The separate deployment and live text/image verification are complete as documented in the release evidence above. Real two-account owner-isolation verification and the documented device/pilot gates remain independent of source publication. No Alpha-ready, penetration-test or validated-demand claim is made.
 
 ## Honest CV description
 

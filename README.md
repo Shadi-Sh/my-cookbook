@@ -1,3 +1,5 @@
+> Release update, 27 October 2026: repository public, MIT and private vulnerability reporting enabled. Security patches deployed as Sites v13; live text/image acceptance passed. Renewed feature freeze: `alpha-freeze-2026-10-27-security`. Remaining account/device gates are documented in [release evidence](docs/security-release-2026-10-27.md).
+
 # My Cookbook · Mein Kochbuch
 
 **A private recipe notebook — from scattered sources to a collection you can find and cook from.**
@@ -33,7 +35,7 @@ Complete recipe translation, semantic search, nutrition estimation and styled fu
 
 ## Alpha status
 
-The accepted feature baseline is tagged `alpha-freeze-2026-10-20-owner-ai`. No new product features are planned until P01–P03 are completed and reviewed. P01 is the owner, so its results will not count as independent validation.
+The current feature baseline is tagged `alpha-freeze-2026-10-27-security`; previous tags remain available. No new product features are planned until P01–P03 are completed and reviewed. P01 is the owner, so its results will not count as independent validation.
 
 - **Verified:** the documented baseline passed 105 automated tests, TypeScript checks and the Worker build. Authenticated live text and image AI flows passed draft → review → save → reload → find again.
 - **Mobile evidence:** the owner confirmed smartphone use and an English AI image import. A fresh physical iPhone text retest remains open.
@@ -79,7 +81,7 @@ The [CI workflow](.github/workflows/check.yml) runs tests, type checking, build,
 
 Notebook writes are limited to **1 MiB** (up to 500 recipes in the schema); photos to **600 per owner / 2 MiB each**. Backups support compact JSON up to **20 MiB**, with a **14 MiB raw-photo export limit**. Restore protects existing state on failure and may refuse near the photo quota. Referenced photos are protected; explicit orphan cleanup has a 24-hour grace period. **Backups are unencrypted and must stay private.**
 
-The full dependency audit on **27 October 2026** reports **zero known advisories**, including development dependencies. See [dependency remediation](docs/dependency-security.md). This is a dated scan, not a security certification. The hosted release has not been redeployed as part of repository preparation.
+The full dependency audit on **27 October 2026** reports **zero known advisories**, including development dependencies. See [dependency remediation](docs/dependency-security.md). This is a dated scan, not a security certification. The hosted security release is verified in the release evidence above.
 
 Original project code is available under the [MIT license](LICENSE), with [third-party notices](THIRD_PARTY_NOTICES.md) preserved. See [contributing](CONTRIBUTING.md) and [security reporting](SECURITY.md). Repository visibility is a separate release decision; a public source repository does not expose private recipe libraries.
 
