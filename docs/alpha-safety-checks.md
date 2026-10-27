@@ -2,6 +2,10 @@
 
 Prüfstand: 2026-10-03 (Europe/Berlin). Fokus dieses Changes: Datenintegrität und sichere private Alpha-Nutzung. Kein neuer KI-Anbieter, keine zusätzliche Infrastruktur, keine Änderung der Sites-Freigabe. Parallele Product-Metriken werden separat vorbereitet und sind nicht Teil dieses Changes.
 
+## Endstand nach Sicherheitsrelease: 27. Oktober 2026
+
+Version 13 ist live. 106 Tests, TypeScript, Build und die erneuten Live-Kernflows für Text- und Bild-KI sind bestanden. Zugriffspolicy unverändert: eingeschränkter Custom-Zugriff mit einem zusätzlichen Viewer. Zwei echte Live-Konten bleiben ungeprüft. Neuer Feature-Freeze und genaue Grenzen: [Release-Nachweis](security-release-2026-10-27.md). Die folgenden älteren Prüfeinträge sind historische Nachweise.
+
 ## Aktuelle Korrektur des Smartphone-Nachweises: 19. Oktober 2026
 
 Founder stellt klar: Der erfolgreiche englische Bildimport auf dem echten Smartphone lief **mit Cloudflare AI**. Der mobile AI-Bildpfad gilt daher live als bestanden. Die früheren Einträge „Smartphone-KI-Bildimport offen“ beschreiben einen überholten Zwischenstand. Gemeldet sind zwei fehlgeschlagene Text-only-AI-Imports; sie dürfen nicht als Ausfall des gesamten Cloudflare-Diensts oder als fehlgeschlagener mobiler Bildpfad ausgewiesen werden.
@@ -12,11 +16,11 @@ Text-Requestvergleich und aktueller Nachweis stehen in `ai-text-image-comparison
 
 | Prüfpunkt | Nachweis | Status |
 |---|---|---|
-| Private Live-Freigabe | Sites: ein zugelassener Owner, keine Gruppen/externe Nutzer | Bestätigt |
+| Eingeschränkte Live-Freigabe | Sites Custom-Zugriff; Owner und ein zusätzlicher externer Viewer; Policy vor/nach Release unverändert | Bestätigt am 27.10. |
 | Anonyme Live-API | GET `/api/state` und nicht existierendes Foto: 401 | Bestätigt |
 | Gefälschte Live-Identität | GET state mit selbst gesetzten Identitätsheadern: 401 | Bestätigt |
 | Echter angemeldeter Live-Owner | Browser zeigt vorhandene Recipe Library | Bestätigt, keine Nutzerdaten geändert |
-| Zwei reale Live-Konten | Kein zweites Testkonto zugelassen; Freigabe blieb privat | Offen vor Alpha-Einladung weiterer Konten |
+| Zwei reale Live-Konten | Ein zusätzlicher Viewer ist zugelassen; vollständiger Isolationstest mit beiden echten Sitzungen fehlt | Offen |
 | Besitzertrennung im Repository | Echte SQLite-Abfragen, zwei Besitzer, fremde Fotos und Notizbücher | Automatisiert bestanden |
 | Same-Origin | Lokale authentifizierte POST-Anfrage mit fremdem Origin: 403 | Bestätigt |
 | Foto-Backup → Restore | Mobile Browseransicht: Foto-Upload, speichern, Download, dieselbe Datei einlesen, Restore | Vollständig lokal bestanden |

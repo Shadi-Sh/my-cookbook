@@ -1,3 +1,5 @@
+> Release update, 27 October 2026: repository public, MIT and private vulnerability reporting enabled. Security patches deployed as Sites v13; live text/image acceptance passed. Renewed feature freeze: `alpha-freeze-2026-10-27-security`. Remaining account/device gates are documented in [release evidence](docs/security-release-2026-10-27.md).
+
 # Project status – 27 October 2026
 
 ## Alpha scope
@@ -24,7 +26,7 @@ No complete recipe translation, LLM/vector search, billing infrastructure or new
 
 Two actual live accounts for isolation and a fresh physical iPhone text retest remain unverified. Cloudflare Free and actual usage were checked live (80.75/10,000 before the Owner exception). A feature freeze is not an Alpha-ready or public-release approval.
 
-Repository preparation now passes 106 tests, TypeScript, build and a full zero-advisory dependency audit. Targeted dependency updates and a sparse-AI-draft regression fix are documented in [dependency security](docs/dependency-security.md). Production has not been redeployed with these changes. Repository stays private; no new test-account access was granted.
+Repository preparation now passes 106 tests, TypeScript, build and a full zero-advisory dependency audit. Targeted dependency updates and a sparse-AI-draft regression fix are documented in [dependency security](docs/dependency-security.md). Production was redeployed as Sites v13; see the release evidence above. Repository is public; no new test-account access was granted.
 
 MIT was explicitly selected; third-party notices and a verified local setup are included. Public/CV findings and an honest CV description are in [readiness](docs/public-cv-readiness.md). Codex assistance is disclosed. No large user base, completed penetration test or validated product demand is claimed.
 
